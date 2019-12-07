@@ -11,3 +11,17 @@ body{
 
   color:black
 }
+
+.song-title{
+  text-align:center;
+  color:black;
+}
+
+button{
+  background-color:yellow;
+  border-radius: 12px;
+  position:relative;
+  margin-left: 125px;
+  margin-top: 10px;
+
+}
