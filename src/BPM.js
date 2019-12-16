@@ -8,3 +8,7 @@ cancelBtn.addEventListener("click",cancel);
 function cancel(){
   electron.remote.getCurrentWindow().close();
 }
+
+function submit(){
+  
+}

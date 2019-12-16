@@ -5,6 +5,7 @@ gitHandle: qawse3dr
 
 
 const electron = require('electron');
+const shell = electron.shell;
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const Menu = electron.Menu;
@@ -86,11 +87,15 @@ var menu = electron.Menu.buildFromTemplate([
     submenu: [
       { //undoes last command
         label: "Documentation",
-        click: () => {}
+        click: () => {
+          shell.openExternal("https:/www.github.com/qawse3dr");
+        }
       },
       { //redoes last command if one exists
         label: "qawse3dr git page",
-        click: () => {}
+        click: () => {
+          shell.openExternal("https:/www.github.com/qawse3dr");
+        }
       }
     ]
   }
@@ -114,9 +119,7 @@ function save(){
 )
 }
 
-/*
-Opens another window to load a midi file.
-*/
+/*Opens another window to load a midi file.*/
 function load(){
   console.log(dialog.showOpenDialog({
     title: "Load Song",
@@ -134,7 +137,6 @@ function load(){
 )
 }
 
-
 /*undos last command if it can.*/
 function undo(){
 
@@ -144,6 +146,7 @@ function undo(){
 function redo(){
 
 }
+
 /*Opens save bpm window*/
 function BPMWindow(){
   // Create the browser window.
