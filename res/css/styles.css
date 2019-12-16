@@ -1,0 +1,42 @@
+
+
+body{
+
+  background-color: #00BFFF;
+  color:white;
+
+}
+
+.text{
+
+  color:black
+}
+
+canvas{
+  background-color: white;
+
+}
+.song{
+    background-color: white;
+    overflow-y:scroll;
+    overflow-x:hidden;
+    height: 100%
+}
+.song-title{
+  text-align:center;
+  color:black;
+}
+header{
+  text-align:center;
+  color:black;
+
+}
+button{
+  background-color:lavender;
+  border-radius: 12px;
+  position:relative;
+  margin-left: 125px;
+  margin-top: 10px;
+  width: 100px;
+
+}

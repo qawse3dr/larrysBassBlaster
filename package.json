@@ -10,6 +10,9 @@
     "type": "git",
     "url": "git+https://github.com/qawse3dr/LarrysBassBlaster.git"
   },
+  "devDependencies": {
+    "electron-prebuilt": "^1.4.13"
+  },
   "keywords": [
     "electron",
     "music",

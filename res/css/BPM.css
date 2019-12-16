@@ -1,0 +1,15 @@
+
+button{
+  background-color:lavender;
+  border-radius: 12px;
+  position:relative;
+  margin-left: 12px;
+  margin-top: 10px;
+  width: 75px;
+
+}
+input{
+  width:50px;
+  align:center;
+
+}
