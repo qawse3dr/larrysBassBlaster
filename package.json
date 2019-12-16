@@ -4,14 +4,14 @@
   "description": "Simple application to create and play back songs with sheet music in bass clef",
   "main": "main.js",
   "scripts": {
-    "start": "electron4 ."
+    "start": "electron ."
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/qawse3dr/LarrysBassBlaster.git"
   },
   "devDependencies": {
-    "electron-prebuilt": "^1.4.13"
+    "electron": "^5.0.1"
   },
   "keywords": [
     "electron",
