@@ -3,6 +3,7 @@
 
 const electron = require("electron");
 const path = require("path");
+const ipcRenderer = electron.ipcRenderer;
 
 const playBtn = document.getElementById("Play");
 playBtn.addEventListener("click",play);
@@ -10,7 +11,7 @@ playBtn.addEventListener("click",play);
 var isPlaying = false;
 var canvas = document.getElementById("song-canvas");
 var ctx = canvas.getContext("2d");
-
+var BPM = 120; //The beats per minute of song
 
 setInterval(render,16);
 
@@ -35,7 +36,7 @@ function play(event){
 }
 
 function getBPM(){
-  return 120;
+  return BPM;
 }
 function edit(){
 
@@ -44,3 +45,9 @@ function edit(){
 function BPM(){
 
 }
+
+
+/********************IPC COMMUNICATIONS*************************/
+ipcRenderer.on("send-bpm", (event,bpm) => { //changes bpm to new given bpm
+  BPM = bpm;
+})

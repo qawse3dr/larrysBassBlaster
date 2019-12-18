@@ -6,12 +6,15 @@ gitHandle: qawse3dr
 
 const electron = require('electron');
 const shell = electron.shell;
+const ipcMain = electron.ipcMain;
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const Menu = electron.Menu;
 const dialog = electron.dialog;
 
-var win = null;
+//Windows object.
+var win = null; //main
+var BPMwin = null; //bpm changer window
 
 
 function createWindow () {
@@ -24,7 +27,7 @@ function createWindow () {
     }
   })
   win.setResizable(false);
-  win.webContents.openDevTools();
+  //win.webContents.openDevTools();
   // and load the index.html of the app.
   win.loadFile('src/index.html')
 
@@ -150,16 +153,17 @@ function redo(){
 /*Opens save bpm window*/
 function BPMWindow(){
   // Create the browser window.
-  var BPMwin = new BrowserWindow({
+  BPMwin = new BrowserWindow({
     width: 200,
     height: 150,
     titleBarStyle: "hidden",
-    alwaysOnTop: true,
+    alwaysOnTop: false,
     webPreferences: {
       nodeIntegration: true,
 
     }
   })
+  //BPMwin.webContents.openDevTools();
   BPMwin.setMenuBarVisibility(false);
   BPMwin.setResizable(false);
 
@@ -186,4 +190,13 @@ app.on("ready",createWindow);
 //Runs when app closes(clean up)
 app.on("close", () => {
   win = null;
+  BPMwin = null;
+})
+
+
+/********************IPC COMMUNICATIONS*************************/
+ipcMain.on("send-bpm-to-main", (event,bpm) => {
+  //sends new bpm the main window
+  win.webContents.send("send-bpm",bpm);
+
 })
