@@ -25,5 +25,8 @@
     "url": "https://github.com/qawse3dr/LarrysBassBlaster/issues"
   },
   "homepage": "https://github.com/qawse3dr/LarrysBassBlaster#readme",
-  "dependencies": {}
+  "dependencies": {
+    "midi-writer-js": "^1.7.2",
+    "tone": "^13.8.25"
+  }
 }

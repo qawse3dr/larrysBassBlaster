@@ -4,7 +4,7 @@
 const electron = require("electron");
 const path = require("path");
 const ipcRenderer = electron.ipcRenderer;
-
+const tone = require("tone");
 const playBtn = document.getElementById("Play");
 playBtn.addEventListener("click",play);
 
@@ -16,6 +16,7 @@ var BPM = 120; //The beats per minute of song
 setInterval(render,16);
 
 function render(){
+
   ctx.fillStyle = "#d3d3d3";
   ctx.fillRect(0,0,750,550);
   ctx.font = "12px Arial";
@@ -29,6 +30,7 @@ function play(event){
   if(!isPlaying){
     isPlaying = true;
     playBtn.innerText = "Stop"
+    let synth = new tone.Synth().toMaster();
   } else{
     isPlaying = false;
     playBtn.innerText = "Play"
@@ -50,4 +52,5 @@ function BPM(){
 /********************IPC COMMUNICATIONS*************************/
 ipcRenderer.on("send-bpm", (event,bpm) => { //changes bpm to new given bpm
   BPM = bpm;
+  tone.Transport.bpm.value=BPM;
 })

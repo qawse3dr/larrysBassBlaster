@@ -12,6 +12,8 @@ const BrowserWindow = electron.BrowserWindow;
 const Menu = electron.Menu;
 const dialog = electron.dialog;
 
+
+
 //Windows object.
 var win = null; //main
 var BPMwin = null; //bpm changer window
@@ -27,7 +29,7 @@ function createWindow () {
     }
   })
   win.setResizable(false);
-  //win.webContents.openDevTools();
+  win.webContents.openDevTools();
   // and load the index.html of the app.
   win.loadFile('src/index.html')
 
@@ -148,6 +150,7 @@ function undo(){
 /*redoes last command if it can.*/
 function redo(){
 
+
 }
 
 /*Opens save bpm window*/
@@ -163,11 +166,10 @@ function BPMWindow(){
 
     }
   })
+
   //BPMwin.webContents.openDevTools();
   BPMwin.setMenuBarVisibility(false);
   BPMwin.setResizable(false);
-
-
 
   // and load the index.html of the app.
   BPMwin.loadFile('src/BPM.html')
@@ -176,7 +178,12 @@ function BPMWindow(){
 
 /*Opens Prefernces window*/
 function preferences(){
+  //play basic synth for now.
+  //create a synth and connect it to the master output (your speakers)
+  var synth = new Tone.Synth().toMaster();
 
+  //play a middle 'C' for the duration of an 8th note
+  synth.triggerAttackRelease("C4", "8n");
 }
 
 
