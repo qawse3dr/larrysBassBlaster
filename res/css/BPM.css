@@ -2,14 +2,14 @@
 button{
   background-color:lavender;
   border-radius: 12px;
-  position:relative;
-  margin-left: 12px;
-  margin-top: 10px;
   width: 75px;
+  margin-left: 5%;
 
 }
 input{
   width:50px;
-  align:center;
+  margin-top: 10%;
+  margin-bottom: 10%;
+  margin-left: 35%;
 
 }
