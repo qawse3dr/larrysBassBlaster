@@ -109,37 +109,37 @@ var menu = electron.Menu.buildFromTemplate([
 /**************** MENU FUNCTIONS *****************************/
 /*saves to a midi file.*/
 function save(){
-  console.log(dialog.showSaveDialog({
+  let fileName = dialog.showSaveDialog({
     title: "Save Song",
     filters: [
       {
-        name: "Midi Files", extensions: ["midi","mid","MIDI","MID"]
+        name: "Json Files", extensions: ["json"]
       },
       {
         name: "All Files", extensions: ["*"]
       }
     ]
-  }
-  )
-)
+  })
+  win.webContents.send("save-file",fileName);
 }
 
 /*Opens another window to load a midi file.*/
 function load(){
-  console.log(dialog.showOpenDialog({
+  let fileName = dialog.showOpenDialog({
     title: "Load Song",
     properties: ["openFile"],
     filters: [
       {
-        name: "Midi Files", extensions: ["midi","mid","MIDI","MID"]
+        name: "Json File", extensions: ["json"]
       },
       {
         name: "All Files", extensions: ["*"]
       }
     ]
-  }
-  )
-)
+  })
+
+  //sends the midi file name to the ipcRenderer
+  win.webContents.send("load-file",fileName[0]);
 }
 
 /*undos last command if it can.*/

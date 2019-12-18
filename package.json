@@ -26,6 +26,8 @@
   },
   "homepage": "https://github.com/qawse3dr/LarrysBassBlaster#readme",
   "dependencies": {
+    "midi-parser": "^1.0.1",
+    "midi-parser-js": "^4.0.4",
     "midi-writer-js": "^1.7.2",
     "tone": "^13.8.25"
   }
