@@ -78,6 +78,10 @@ var menu = electron.Menu.buildFromTemplate([
         label: "Change BPM",
         click: BPMWindow
       },
+      { //Opens Add new Track window
+        label: "Add track",
+        click: newTrack
+      },
       {
         type: "separator"
       },
@@ -176,14 +180,12 @@ function BPMWindow(){
   BPMwin.show();
 }
 
+function newTrack(){
+  console.log("WORK IN PROGRESS")
+}
 /*Opens Prefernces window*/
 function preferences(){
-  //play basic synth for now.
-  //create a synth and connect it to the master output (your speakers)
-  var synth = new Tone.Synth().toMaster();
 
-  //play a middle 'C' for the duration of an 8th note
-  synth.triggerAttackRelease("C4", "8n");
 }
 
 

@@ -18,7 +18,9 @@ var isPlaying = false;
 var song = {
   title: "Angel Beats! - Theme Of SSS",
   bpm: 83,
-  notes: [{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
+  tracks:[{
+    instrument:"Guitar",
+    notes: [{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
           {name:"F#5",length:"8n"},{name:"F#5",length:"8n"},{name:"F5",length:"8n"},{name:"A#4",length:"8n"},{name:"F#4",length:"8n"},
           {name:"G#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
           {name:"D#4",length:"16n"},{name:"F4",length:"16n"},{name:"F#4",length:"6n"},{name:"F4",length:"8n"},{name:"F#4",length:"8n"},{name:"G#4",length:"6n"},{name:"F#4",length:"8n"}
@@ -27,6 +29,20 @@ var song = {
                   {name:"G#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
                   {name:"D#4",length:"16n"},{name:"F4",length:"16n"},{name:"F#4",length:"6n"},{name:"F4",length:"8n"},{name:"F#4",length:"8n"},{name:"G#4",length:"6n"},{name:"F#4",length:"8n"}
                   ,{name:"G#4",length:"6n"},{name:"A#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"4n"}]
+    },
+    {
+      instrument:"Bass",
+      notes:[{name:"F#2",length:"8n"},{name:"G#2",length:"8n"},{name:"A#2",length:"4n"},
+            {name:"F#3",length:"8n"},{name:"F#3",length:"8n"},{name:"F3",length:"8n"},{name:"A#2",length:"8n"},{name:"F#2",length:"8n"},
+            {name:"G#2",length:"8n"},{name:"A#2",length:"4n"},{name:"F#2",length:"8n"},{name:"G#2",length:"8n"},{name:"A#2",length:"4n"},
+            {name:"D#2",length:"16n"},{name:"F2",length:"16n"},{name:"F#2",length:"6n"},{name:"F2",length:"8n"},{name:"F#2",length:"8n"},{name:"G#4",length:"6n"},{name:"F#4",length:"8n"}
+            ,{name:"G#2",length:"6n"},{name:"A#2",length:"8n"},{name:"A#2",length:"4n"},{name:"F#2",length:"4n"},{name:"F#2",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
+                    {name:"F#3",length:"8n"},{name:"F#3",length:"8n"},{name:"F3",length:"8n"},{name:"A#2",length:"8n"},{name:"F#2",length:"8n"},
+                    {name:"G#2",length:"8n"},{name:"A#2",length:"4n"},{name:"F#2",length:"8n"},{name:"G#2",length:"8n"},{name:"A#2",length:"4n"},
+                    {name:"D#2",length:"16n"},{name:"F2",length:"16n"},{name:"F#2",length:"6n"},{name:"F2",length:"8n"},{name:"F#2",length:"8n"},{name:"G#4",length:"6n"},{name:"F#4",length:"8n"}
+                    ,{name:"G#2",length:"6n"},{name:"A#2",length:"8n"},{name:"A#2",length:"4n"},{name:"F#2",length:"4n"}]
+    }
+]
 };
 
 
@@ -38,7 +54,10 @@ var width = 750;
 //music vars
 var BPM = 120; //The beats per minute of song
 var volume = 0;
-
+var isCountOn = false; //if starting count is on.
+var metronome = false; //if the metronome is on.
+var isSolo = false; //if the instrument is soloing
+var currentInstrument = 0;
 //sets the rendering item for canvas
 setInterval(render,16);
 
@@ -94,22 +113,26 @@ function drawMusic(){
 /*********************GRAPHICS************************/
 
 function play(event){ //plays the song or stops it.
-  resizeCanvas(6000,6000)
   if(!isPlaying){
     isPlaying = true;
     playBtn.innerText = "Stop"
+    synth.sync();
     //TODO: next add it so many tracks can be played
-    let delta = tone.now(); //time passed
-    for(note in song.notes){ //adds song to queue
-      synth.triggerAttackRelease(song.notes[note].name,song.notes[note].length,delta);
-      delta += tone.TransportTime(song.notes[note].length);
-      console.log(song.notes[note]);
+    for(track in song.tracks){
+      console.log(track);
+      let delta = 0; //time passed
+      for(note in song.tracks[track].notes){ //adds song to queue
+        synth.triggerAttackRelease(song.tracks[track].notes[note].name,song.tracks[track].notes[note].length,delta);
+        delta += tone.TransportTime(song.tracks[track].notes[note].length);
+        //console.log(song.tracks[track].notes[note]);
+      }
     }
-
+    tone.Transport.start(tone.now());
   } else{ //shuts off song. need to add in shut off at end of song.
     isPlaying = false;
     playBtn.innerText = "Play"
-    createSynth();
+    synth.unsync();
+    tone.Transport.stop();
 
   }
 }
@@ -117,7 +140,7 @@ function play(event){ //plays the song or stops it.
 /*Creates the synth object*/
 function createSynth(){
   if(synth != null) synth.dispose()
-  synth = new tone.Synth().toMaster();
+  synth = new tone.PolySynth().toMaster();
 }
 /*Gets the BPM*/
 function getBPM(){
