@@ -131,8 +131,11 @@ function play(event){ //plays the song or stops it.
   } else{ //shuts off song. need to add in shut off at end of song.
     isPlaying = false;
     playBtn.innerText = "Play"
-    synth.unsync();
     tone.Transport.stop();
+    synth.unsync();
+    createSynth()
+
+
 
   }
 }
