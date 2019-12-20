@@ -10,7 +10,7 @@ but remember
 ## Installation
 ```
 git clone
-npm isntall
+npm install
 npm start
 ```
 
