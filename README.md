@@ -9,7 +9,7 @@ but remember
 
 ## Installation
 ```
-git clone
+git clone https://github.com/qawse3dr/LarrysBassBlaster
 npm install
 npm start
 ```
