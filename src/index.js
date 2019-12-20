@@ -5,8 +5,7 @@ const electron = require("electron");
 const path = require("path");
 const ipcRenderer = electron.ipcRenderer;
 const tone = require("tone");
-const playBtn = document.getElementById("Play");
-const midiParser = require("midi-parser-js");
+const playBtn = document.getElementById("play-btn");
 const fs = require("fs");
 
 const volumeSlider = document.getElementById("volume");
@@ -14,7 +13,7 @@ const volumeSlider = document.getElementById("volume");
 var synth = null;
 createSynth();
 
-var isPlaying = false;
+
 var song = {
   title: "Angel Beats! - Theme Of SSS",
   bpm: 83,
@@ -54,7 +53,8 @@ var width = 750;
 //music vars
 var BPM = 120; //The beats per minute of song
 var volume = 0;
-var isCountOn = false; //if starting count is on.
+var isPlaying = false;
+var isCountOn = true; //if starting count is on.
 var metronome = false; //if the metronome is on.
 var isSolo = false; //if the instrument is soloing
 var currentInstrument = 0;
@@ -111,34 +111,19 @@ function drawMusic(){
 
 }
 /*********************GRAPHICS************************/
-
+//plays the song when play is clicked or stops it if its already playing
 function play(event){ //plays the song or stops it.
   if(!isPlaying){
-    isPlaying = true;
-    playBtn.innerText = "Stop"
-    synth.sync();
-    //TODO: next add it so many tracks can be played
-    for(track in song.tracks){
-      console.log(track);
-      let delta = 0; //time passed
-      for(note in song.tracks[track].notes){ //adds song to queue
-        synth.triggerAttackRelease(song.tracks[track].notes[note].name,song.tracks[track].notes[note].length,delta);
-        delta += tone.TransportTime(song.tracks[track].notes[note].length);
-        //console.log(song.tracks[track].notes[note]);
-      }
-    }
-    tone.Transport.start(tone.now());
+    playSong();
   } else{ //shuts off song. need to add in shut off at end of song.
-    isPlaying = false;
-    playBtn.innerText = "Play"
-    tone.Transport.stop();
-    synth.unsync();
-    createSynth()
+    stopPlay();
 
 
 
   }
 }
+
+
 /*********MUSIC FUNCTIONS*************/
 /*Creates the synth object*/
 function createSynth(){
@@ -159,6 +144,42 @@ volumeSlider.oninput = () => {
   volume = volumeSlider.value;
   console.log(volume);
   synth.volume.value = volume;
+}
+
+function playSong(){
+  isPlaying = true;
+  playBtn.innerText = "Stop"
+  let startOffset = (isCountOn) ? tone.Time("4n")*8:0;
+  console.log(startOffset)
+  synth.sync(); //start syncing the tracks
+
+  if(isCountOn){
+    for(let i = 0; i < 8; i++)
+    synth.triggerAttackRelease("C2","4n",tone.Time("4n")*i,1);
+  }
+  //loops through and syncs tracks
+  for(track in song.tracks){
+    if(isSolo){ //skip other tracks if you are soloing
+      if(track != currentInstrument){
+        continue;
+      }
+    }
+    let delta = startOffset; //time passed
+    for(note in song.tracks[track].notes){ //adds song to queue
+      synth.triggerAttackRelease(song.tracks[track].notes[note].name,song.tracks[track].notes[note].length,delta);
+      delta += tone.TransportTime(song.tracks[track].notes[note].length); //add offset
+      //console.log(song.tracks[track].notes[note]);
+    }
+  }
+  tone.Transport.start(tone.now());
+}
+
+function stopPlay(){
+  isPlaying = false;
+  playBtn.innerText = "Play"
+  tone.Transport.stop();
+  synth.unsync();
+  createSynth()
 }
 /*********MUSIC FUNCTIONS*************/
 
