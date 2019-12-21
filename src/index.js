@@ -36,6 +36,7 @@ var synth = null;
 createSynth();
 
 
+
 var song = {
   title: "Angel Beats! - Theme Of SSS",
   bpm: 83,
@@ -80,7 +81,9 @@ var currentInstrument = 0;
 //sets the rendering item for canvas
 setInterval(render,16);
 
-
+//loads defualt Song.
+setBPM(song.bpm);
+setTitle(song.title);
 
 
 /*********************GRAPHICS************************/
