@@ -105,6 +105,7 @@ var metronome = false; //if the metronome is on.
 var isSolo = false; //if the instrument is soloing
 var currentInstrument = 0;
 var currentNote = 0;
+var currentTimeouts = [];
 //sets the rendering item for canvas
 setInterval(render,16);
 
@@ -286,6 +287,9 @@ function playSong(){
     synth.triggerAttackRelease("C2","32n",tone.Time("4n")*i,1);
   }
   //loops through and syncs tracks
+  if(currentNote >= song.tracks[currentInstrument].notes.length){
+    currentNote = 0;
+  }
   for(track in song.tracks){
     if(isSolo){ //skip other tracks if you are soloing
       if(track != currentInstrument){
@@ -293,7 +297,7 @@ function playSong(){
       }
     }
     let delta = startOffset; //time passed
-    for(note in song.tracks[track].notes){ //adds song to queue
+    for(let note = currentNote; note < song.tracks[track].notes.length;note++){ //adds song to queue
       if(song.tracks[track].notes[note].name !== "r"){
         synth.triggerAttackRelease(song.tracks[track].notes[note].name,song.tracks[track].notes[note].length,delta,0.5);
         //console.log(song.tracks[track].notes[note]);
@@ -316,9 +320,10 @@ function playSong(){
       }
   }
   for(time in timeoutOffsets){ //sets the timer for changing notes
-    setTimeout( () => {
+    currentTimeouts.push(setTimeout( () => {
       currentNote++;
-    }, timeoutOffsets[time]*1000);
+
+    }, timeoutOffsets[time]*1000));
   }
   tone.Transport.start();
 
@@ -330,7 +335,10 @@ function stopPlay(){
   playBtn.innerText = "Play"
   tone.Transport.stop();
   synth.unsync();
-  createSynth()
+  createSynth();
+  currentTimeouts.forEach(timeout => {
+    clearTimeout(timeout);
+  });
 }
 
 /*Converts the time into how many beats it will take.*/
