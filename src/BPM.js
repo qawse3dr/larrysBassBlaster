@@ -27,3 +27,17 @@ function submit(){
 
   }
 }
+
+/*****keyboard shortcuts************/
+electron.remote.getCurrentWindow().webContents.on('before-input-event', (event, input) => {
+
+  if(input.type == "keyDown"){
+    console.log(input.code)
+    switch(input.code){
+      case "Enter":
+        submit()
+        break;
+    }
+  }
+})
+/*******keyboard shortcuts*********/
