@@ -209,3 +209,10 @@ ipcMain.on("send-bpm-to-main", (event,bpm) => {
   win.webContents.send("send-bpm",bpm);
 
 })
+ipcMain.on("open-bpm-window", (event) => {
+  //opens bpm window
+  BPMWindow();
+})
+ipcMain.on("save", (event) => {
+  save();
+})
