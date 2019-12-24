@@ -17,8 +17,6 @@ const soloBtn = document.getElementById("solo-btn");
 
 const volumeSlider = document.getElementById("volume"); //slider
 const canvas = document.getElementById("song-canvas"); //render
-const canvasScroll = document.getElementById("canvas-scroll")
-console.log(canvasScroll)
 //Button Listener for playing.
 playBtn.addEventListener("click",play);
 metronomeBtn.addEventListener("click",metronomeToggle);
@@ -39,18 +37,7 @@ var Notes = {
   halfNote: 32,
   quarterNote: 64,
   eigthNote: 96,
-  eigthNoteLeft: 128,
-  eigthNoteMiddle: 160,
-  eigthNoteRight: 192,
-  sixteenthNote: 224,
-  sixteenthNoteLeft: 256,
-  sixteenthNoteMiddle: 288,
-  sixteenthNoteRight: 320,
-  wholeRest: 352,
-  halfRest: 384,
-  quarterRest: 416,
-  eigthRest: 448,
-  sixteenthRest: 480
+  sixteenthNote: 128,
 }
 //sets the target to the speakers.
 var synth = null;
@@ -64,9 +51,11 @@ this is an example song that will be loaded at startup.
 var song = {
   title: "Angel Beats! - Theme Of SSS",
   bpm: 83,
+
   tracks:[{
+    clef:"Treble",
     instrument:"Guitar",
-    notes: [{name:"F#4",length:"8n"},{name:"F#4",length:"8n"},{name:"A#4",length:"4n"},
+    notes: [{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
           {name:"F#5",length:"8n"},{name:"F#5",length:"8n"},{name:"F5",length:"8n"},{name:"A#4",length:"8n"},{name:"F#4",length:"8n"},
           {name:"G#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
           {name:"D#4",length:"16n"},{name:"F4",length:"16n"},{name:"F#4",length:"4n."},{name:"F4",length:"8n"},{name:"F#4",length:"8n"},{name:"G#4",length:"4n."},{name:"F#4",length:"8n"}
@@ -74,33 +63,10 @@ var song = {
                   {name:"F#5",length:"8n"},{name:"F#5",length:"8n"},{name:"F5",length:"8n"},{name:"A#4",length:"8n"},{name:"F#4",length:"8n"},
                   {name:"G#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
                   {name:"D#4",length:"16n"},{name:"F4",length:"16n"},{name:"F#4",length:"4n."},{name:"F4",length:"8n"},{name:"F#4",length:"8n"},{name:"G#4",length:"4n."},{name:"F#4",length:"8n"}
-                  ,{name:"G#4",length:"4n."},{name:"A#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"4n"},{name:"F#4",length:"8n"},{name:"A#4",length:"4n"},
-                        {name:"F#5",length:"8n"},{name:"F#5",length:"8n"},{name:"F5",length:"8n"},{name:"A#4",length:"8n"},{name:"F#4",length:"8n"},
-                        {name:"G#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
-                        {name:"D#4",length:"16n"},{name:"F4",length:"16n"},{name:"F#4",length:"4n."},{name:"F4",length:"8n"},{name:"F#4",length:"8n"},{name:"G#4",length:"4n."},{name:"F#4",length:"8n"}
-                        ,{name:"G#4",length:"4n."},{name:"A#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"4n"},{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
-                                {name:"F#5",length:"8n"},{name:"F#5",length:"8n"},{name:"F5",length:"8n"},{name:"A#4",length:"8n"},{name:"F#4",length:"8n"},
-                                {name:"G#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
-                                {name:"D#4",length:"16n"},{name:"F4",length:"16n"},{name:"F#4",length:"4n."},{name:"F4",length:"8n"},{name:"F#4",length:"8n"},{name:"G#4",length:"4n."},{name:"F#4",length:"8n"}
-                                ,{name:"G#4",length:"4n."},{name:"A#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"4n"},{name:"F#4",length:"8n"},{name:"A#4",length:"4n"},
-                                      {name:"F#5",length:"8n"},{name:"F#5",length:"8n"},{name:"F5",length:"8n"},{name:"A#4",length:"8n"},{name:"F#4",length:"8n"},
-                                      {name:"G#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
-                                      {name:"D#4",length:"16n"},{name:"F4",length:"16n"},{name:"F#4",length:"4n."},{name:"F4",length:"8n"},{name:"F#4",length:"8n"},{name:"G#4",length:"4n."},{name:"F#4",length:"8n"}
-                                      ,{name:"G#4",length:"4n."},{name:"A#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"4n"},{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
-                                              {name:"F#5",length:"8n"},{name:"F#5",length:"8n"},{name:"F5",length:"8n"},{name:"A#4",length:"8n"},{name:"F#4",length:"8n"},
-                                              {name:"G#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
-                                              {name:"D#4",length:"16n"},{name:"F4",length:"16n"},{name:"F#4",length:"4n."},{name:"F4",length:"8n"},{name:"F#4",length:"8n"},{name:"G#4",length:"4n."},{name:"F#4",length:"8n"}
-                                              ,{name:"G#4",length:"4n."},{name:"A#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"4n"},{name:"F#4",length:"8n"},{name:"A#4",length:"4n"},
-                                                    {name:"F#5",length:"8n"},{name:"F#5",length:"8n"},{name:"F5",length:"8n"},{name:"A#4",length:"8n"},{name:"F#4",length:"8n"},
-                                                    {name:"G#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
-                                                    {name:"D#4",length:"16n"},{name:"F4",length:"16n"},{name:"F#4",length:"4n."},{name:"F4",length:"8n"},{name:"F#4",length:"8n"},{name:"G#4",length:"4n."},{name:"F#4",length:"8n"}
-                                                    ,{name:"G#4",length:"4n."},{name:"A#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"4n"},{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
-                                                            {name:"F#5",length:"8n"},{name:"F#5",length:"8n"},{name:"F5",length:"8n"},{name:"A#4",length:"8n"},{name:"F#4",length:"8n"},
-                                                            {name:"G#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
-                                                            {name:"D#4",length:"16n"},{name:"F4",length:"16n"},{name:"F#4",length:"4n."},{name:"F4",length:"8n"},{name:"F#4",length:"8n"},{name:"G#4",length:"4n."},{name:"F#4",length:"8n"}
-                                                            ,{name:"G#4",length:"4n."},{name:"A#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"4n"}]
+                  ,{name:"G#4",length:"4n."},{name:"A#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"4n"}]
     },
     {
+      clef:"Bass",
       instrument:"Bass",
       notes:[{name:"F#2",length:"8n"},{name:"G#2",length:"8n"},{name:"A#2",length:"4n"},
             {name:"F#3",length:"8n"},{name:"F#3",length:"8n"},{name:"F3",length:"8n"},{name:"A#2",length:"8n"},{name:"F#2",length:"8n"},
@@ -192,16 +158,17 @@ function renderBPM(){
 function drawMusic(){
   //the current width the notes take up on the current staff
   let xOffset = 40; //x offset
-  let yOffset = 50; //y offset
-  let noteSpacing = 32; //how far apart the notes are
+  let yOffset = 100; //y offset
+  let noteSpacing = 48; //how far apart the notes are
   let spaceSize = 10; // how far apart the lines are
   let screenHeight = 500; //the parents screenHeight
+  let barCounter = 0;//used to see where the bar lines should be drawn
+
   drawStaff(yOffset,spaceSize); //draws a staff at an offset on y=0
   for(notes in song.tracks[currentInstrument].notes){
     if(notes == currentNote){//drawing current note indicator
       /*checks if its still on the screen*/
 
-      console.log(500+canvas.parentElement.scrollTop)
       if(yOffset >= 200+canvas.parentElement.scrollTop){
         canvas.parentElement.scrollTop += 10
       }
@@ -213,12 +180,18 @@ function drawMusic(){
       ctx.stroke();
     }
     drawNote(notes,xOffset,yOffset);
+
+    barCounter += 1/Number(song.tracks[currentInstrument].notes[notes].length.replace("n",""));
+    if(barCounter >= 1){
+      barCounter = 0;
+      drawBar(xOffset,yOffset,spaceSize);
+    }
     xOffset += noteSpacing; //adds space for next note
     if(xOffset >= (width-80)){
       xOffset = 40;
       //creates new staff
-      yOffset += spaceSize*5 + 25;
-      if(yOffset > height){ //increase canvas size.
+      yOffset += spaceSize*5 + 75;
+      if(yOffset+50 > height){ //increase canvas size.
         resizeCanvas(0,yOffset+spaceSize*5+50);
       }
       drawStaff(yOffset,spaceSize);
@@ -226,18 +199,28 @@ function drawMusic(){
     }
   }
 
-}
 
+}
+/**draws a barline*/
+function drawBar(xOffset,yOffset,spaceSize){
+    ctx.beginPath();
+    ctx.moveTo(xOffset + 30,yOffset);
+    ctx.lineTo(xOffset + 30,yOffset + spaceSize*4);
+    ctx.stroke();
+    ctx.closePath();
+}
 /**Draws a staff with the offset of y=offset*/
 function drawStaff(offset,spaceSize){
 
-  ctx.beginPath();
+
   for(let y = offset; y < offset + spaceSize*5; y += spaceSize  ){
+    ctx.beginPath();
     ctx.moveTo(40,y);
-    ctx.lineTo(width - 40,y);
+    ctx.lineTo(width - 30 ,y);
+    ctx.stroke();
+    ctx.closePath();
   }
-  ctx.closePath();
-  ctx.stroke();
+
 }
 
 /**Draws note given by index note in song in the current track.*/
@@ -245,6 +228,53 @@ function drawNote(note,xOffset,yOffset){
   let noteOffset = 0; //how much to shift the y offset for the note.
   let noteType = 0;  //the shift in the spriteSheet needed for note type.
   let isDotted = false;
+  let isRest = 0; //if its a rest it will be shifted 32 pixels down in the sprite sheet
+  //gets note offsets
+  for(let i = 0;i < song.tracks[currentInstrument].notes[notes].name.length;i++){
+    let noteLetter = song.tracks[currentInstrument].notes[notes].name[i];
+    if(i == 0){
+      switch(noteLetter){
+        case "A":
+          noteOffset = -35;
+          break;
+        case "B":
+          noteOffset = -40;
+          break;
+        case "C":
+          noteOffset = -10;
+          break;
+        case "D":
+          noteOffset = -15;
+          break;
+        case "E":
+          noteOffset = -20;
+          break;
+        case "F":
+          noteOffset = -25;
+          break;
+        case "G":
+          noteOffset = -30;
+          break;
+      }
+    } else if([0,1,2,3,4,5,6,7].includes(Number(noteLetter))){
+
+      let offsets = [140,105,70,35,0,-35,-70]
+      noteOffset += offsets[Number(noteLetter)] ;
+      if(song.tracks[currentInstrument].clef == "Treble"){
+
+      }
+
+    }
+
+  }
+  if(song.tracks[currentInstrument].notes[notes].name == "r"){
+    isRest = 1;
+    noteOffset = 5;
+  } else if(song.tracks[currentInstrument].notes[notes].name.includes("#")){
+    drawSymbol("#", xOffset,yOffset,noteOffset)
+  } else if(song.tracks[currentInstrument].notes[notes].name.includes("b")){
+    drawSymbol("b", xOffset,yOffset,noteOffset)
+  }
 
   //gets note type
   switch(song.tracks[currentInstrument].notes[note].length){
@@ -277,13 +307,23 @@ function drawNote(note,xOffset,yOffset){
       break;
   }
 
-  ctx.drawImage(spriteSheet,noteType,0,32,32,xOffset,yOffset + noteOffset,32,32);
+  ctx.drawImage(spriteSheet,noteType,32*isRest,32,32,xOffset,yOffset + noteOffset,32,32);
   if(isDotted){
     ctx.beginPath();
 
-    ctx.arc(xOffset+20, yOffset+25, 3, 0, 2 * Math.PI);
+    ctx.arc(xOffset+20, yOffset+25 + noteOffset, 3, 0, 2 * Math.PI);
     ctx.fill();
+    ctx.closePath();
   }
+}
+
+/**draws the symbol symbol beside the note to the left*/
+function drawSymbol(symbol, xOffset,yOffset,noteShift){
+  ctx.font = "12px Arial";   //default font.
+  ctx.fillStyle = "black";
+  ctx.textAlign = "center";
+
+  ctx.fillText(symbol,xOffset-5,yOffset+noteShift+25);
 }
 
 /*********************GRAPHICS************************/
@@ -291,7 +331,7 @@ function drawNote(note,xOffset,yOffset){
 function play(event){ //plays the song or stops it.
   if(!isPlaying){
     playSong();
-  } else{ //shuts off song. need to add in shut off at end of song.
+  } else{ //shuts off the song. need to add in shut off at end of song.
     stopPlay();
 
 
@@ -320,7 +360,6 @@ function setBPM(bpm){
 /*************BUTTON onclicks*********************/
 volumeSlider.oninput = () => {
   volume = volumeSlider.value;
-  console.log(volume);
   synth.volume.value = volume;
 }
 
@@ -330,7 +369,6 @@ function playSong(){
   let timeoutOffsets = [];
   let startOffset = (isCountOn) ? tone.Time("4n")*8 : 0; //offset for start count
   let maxDelta = 0; //gets the length of the song.
-  console.log(startOffset)
   synth.sync(); //start syncing the tracks
 
   if(isCountOn){
@@ -514,7 +552,7 @@ ipcRenderer.on("send-bpm", (event,bpm) => { //changes bpm to new given bpm
 })
 
 //loading the JSON obj from file listener
-ipcRenderer.on("load-file", (event,fileName) =>{ //loads a midi file in with given name
+ipcRenderer.on("load-file", (event,fileName) => {
   loadFile(fileName);
 })
 
