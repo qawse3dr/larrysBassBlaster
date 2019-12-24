@@ -281,7 +281,7 @@ function drawNote(note,xOffset,yOffset){
     case "1n":
       noteType = Notes.wholeNote;
       break;
-    case "1n":
+    case "1n.":
       noteType = Notes.wholeNote;
       isDotted = true;
       break;
@@ -563,3 +563,51 @@ ipcRenderer.on("save-file", (event,fileName) => {
   console.log("saved")
 })
 /********************IPC COMMUNICATIONS*************************/
+
+
+/*****keyboard shortcuts************/
+electron.remote.getCurrentWindow().webContents.on('before-input-event', (event, input) => {
+
+  if(input.type == "keyDown" && input.control){
+    if(input.code == "KeyS"){
+      ipcRenderer.send("save");
+    }
+  } else if(input.type == "keyDown"){
+    console.log(input.code)
+    switch(input.code){
+      case "KeyP":
+        play(event)
+        break;
+      case "KeyB":
+        ipcRenderer.send("open-bpm-window");
+        break;
+      case "KeyS":
+        soloToggle()
+        break;
+      case "KeyM":
+        metronomeToggle();
+        break;
+      case "KeyC":
+        countToggle();
+        break;
+      case "ArrowLeft":
+        currentNote--;
+        if(isPlaying){
+          play(event);
+          play(event);
+        }
+        break;
+      case "ArrowRight":
+        currentNote++;
+        if(isPlaying){
+          play(event);
+          play(event);
+        }
+        break;
+      case "ArrowUp":
+        currentNote = 0;
+        break;
+    }
+  }
+})
+/*******keyboard shortcuts*********/
