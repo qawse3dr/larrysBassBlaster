@@ -28,7 +28,7 @@ function createWindow () {
       nodeIntegration: true
     }
   })
-  win.setResizable(false);
+  //win.setResizable(false);
   win.webContents.openDevTools();
   // and load the index.html of the app.
   win.loadFile('src/index.html')
@@ -173,7 +173,7 @@ function BPMWindow(){
 
   //BPMwin.webContents.openDevTools();
   BPMwin.setMenuBarVisibility(false);
-  BPMwin.setResizable(false);
+BPMwin.setResizable(false);
 
   // and load the index.html of the app.
   BPMwin.loadFile('src/BPM.html')

@@ -11,16 +11,21 @@ body{
   color:black
 }
 
-canvas{
-  background-color: white;
-
-
+canvas {
+    position: relative;
+    display: block;
 }
 .song{
     background-color: white;
     overflow-y:scroll;
+    text-align:center;
     overflow-x:hidden;
-    height: 100%
+    border: 5px;
+    border-radius: 20px;
+    border-color:black;
+    height: 500px;
+margin: 0 auto;
+display: block;
 }
 .song-title{
   text-align:center;
@@ -40,7 +45,11 @@ button{
   border-radius: 12px;
   position:relative;
   margin-left: 5%;
-  margin-top: 10px;
+  margin-top: 2%;
   width: 100px;
 
+}
+
+.buttons{
+  text-align: center;
 }
