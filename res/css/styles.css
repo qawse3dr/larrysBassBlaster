@@ -12,16 +12,23 @@ body{
 }
 
 .title{
-  position: relative;
+  position: fixed;
   color:black;
-  margin-left:40%;
+  margin-left:30%;
+  width:300px;
+  text-align:center;
+
+  height:auto;
+  margin-bottom: 5%
+
 }
 select{
-  margin-left: 10%;
+  margin-left: 80%;
 }
 canvas {
     position: relative;
     display: block;
+
 }
 .song{
     background-color: white;
@@ -32,8 +39,8 @@ canvas {
     border-radius: 20px;
     border-color:black;
     height: 500px;
-margin: 0 auto;
-display: block;
+    margin: 0 auto;
+    display: block;
 }
 header{
   text-align:center;

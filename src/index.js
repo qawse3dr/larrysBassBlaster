@@ -595,9 +595,9 @@ function resize(event){
 /**if the track was changed*/
 function changeTrack(event){
   track = trackDropdown.selectedIndex;
-  if(track != 0){
-    currentInstrument = track-1;
-    stopPlay();
+  currentInstrument = track;
+  if(isPlaying){
+    stopPlay(); //stops playing if it current playing
   }
 }
 
@@ -618,6 +618,10 @@ ipcRenderer.on("send-bpm", (event,bpm) => { //changes bpm to new given bpm
     stopPlay();
     playSong();
   }
+})
+
+ipcRenderer.on("send-title", (event,title) => { //changes bpm to new given bpm
+  setTitle(title);
 })
 
 //loading the JSON obj from file listener

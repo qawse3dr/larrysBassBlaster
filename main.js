@@ -17,6 +17,7 @@ const dialog = electron.dialog;
 //Windows object.
 var win = null; //main
 var BPMwin = null; //bpm changer window
+var titleWin = null; //title Changer window
 
 
 function createWindow () {
@@ -24,6 +25,8 @@ function createWindow () {
   win = new BrowserWindow({
     width: 800,
     height: 600,
+    minHeight: 600,
+    minWidth: 800,
     webPreferences: {
       nodeIntegration: true
     }
@@ -77,6 +80,10 @@ var menu = electron.Menu.buildFromTemplate([
       { //Opens BPM Window
         label: "Change BPM",
         click: BPMWindow
+      },
+      { //Opens Title change Window
+        label: "Change Title",
+        click: titleWindow
       },
       { //Opens Add new Track window
         label: "Add track",
@@ -173,7 +180,7 @@ function BPMWindow(){
 
   //BPMwin.webContents.openDevTools();
   BPMwin.setMenuBarVisibility(false);
-BPMwin.setResizable(false);
+  BPMwin.setResizable(false);
 
   // and load the index.html of the app.
   BPMwin.loadFile('src/BPM.html')
@@ -186,6 +193,28 @@ function newTrack(){
 /*Opens Prefernces window*/
 function preferences(){
 
+}
+
+function titleWindow(){
+  // Create the browser window.
+  titleWin = new BrowserWindow({
+    width: 400,
+    height: 150,
+    titleBarStyle: "hidden",
+    alwaysOnTop: false,
+    webPreferences: {
+      nodeIntegration: true,
+
+    }
+  })
+
+  //BPMwin.webContents.openDevTools();
+  titleWin.setMenuBarVisibility(false);
+  titleWin.setResizable(false);
+
+  // and load the index.html of the app.
+  titleWin.loadFile('src/title.html')
+  titleWin.show();
 }
 
 
@@ -207,6 +236,12 @@ app.on("close", () => {
 ipcMain.on("send-bpm-to-main", (event,bpm) => {
   //sends new bpm the main window
   win.webContents.send("send-bpm",bpm);
+
+})
+
+ipcMain.on("send-title-to-main", (event,title) => {
+  //sends new bpm the main window
+  win.webContents.send("send-title",title);
 
 })
 ipcMain.on("open-bpm-window", (event) => {
