@@ -11,6 +11,14 @@ body{
   color:black
 }
 
+.title{
+  position: relative;
+  color:black;
+  margin-left:40%;
+}
+select{
+  margin-left: 10%;
+}
 canvas {
     position: relative;
     display: block;
@@ -26,10 +34,6 @@ canvas {
     height: 500px;
 margin: 0 auto;
 display: block;
-}
-.song-title{
-  text-align:center;
-  color:black;
 }
 header{
   text-align:center;

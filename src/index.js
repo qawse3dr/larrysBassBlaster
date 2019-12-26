@@ -17,6 +17,8 @@ const soloBtn = document.getElementById("solo-btn");
 
 const volumeSlider = document.getElementById("volume"); //slider
 const canvas = document.getElementById("song-canvas"); //render
+const trackDropdown = document.getElementById("track-dropdown")
+
 //Button Listener for playing.
 playBtn.addEventListener("click",play);
 metronomeBtn.addEventListener("click",metronomeToggle);
@@ -24,7 +26,7 @@ countBtn.addEventListener("click",countToggle);
 soloBtn.addEventListener("click",soloToggle);
 canvas.addEventListener("click",canvasClick);
 window.addEventListener("resize", resize)
-
+trackDropdown.addEventListener("change",changeTrack)
 
 //Setting up graphics
 var ctx = canvas.getContext("2d");
@@ -57,6 +59,7 @@ var song = {
   tracks:[{
     clef:"Treble",
     instrument:"Guitar",
+    name:"Lead Guitar",
     notes: [{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
           {name:"F#5",length:"8n"},{name:"F#5",length:"8n"},{name:"F5",length:"8n"},{name:"A#4",length:"8n"},{name:"G#4",length:"8n"},
           {name:"A#4",length:"8n"},{name:"F#4",length:"4n"},{name:"G#4",length:"8n"},{name:"A#4",length:"8n"},{name:"F#4",length:"4n"},
@@ -69,6 +72,7 @@ var song = {
     },
     {
       clef:"Bass",
+      name:"Bass",
       instrument:"Bass",
       notes:[{name:"F#3",length:"8n"},{name:"G#3",length:"8n"},{name:"A#3",length:"4n"},
             {name:"F#4",length:"8n"},{name:"F#4",length:"8n"},{name:"F4",length:"8n"},{name:"A#3",length:"8n"},{name:"G#3",length:"8n"},
@@ -96,7 +100,7 @@ var noteRender = [
 }
 ];
 
-
+loadTracks()
 //music vars
 var BPM = 120; //The beats per minute of song
 var volume = 0;
@@ -311,11 +315,9 @@ function drawNote(note,xOffset,yOffset){
       noteType = Notes.sixteenthNote;
       break;
   }
-  if(notes ==0)
-  console.log(noteOffset)
   //draw lines for note if its off the staff
   if(noteOffset < -5){
-    for(let lines = -10; lines >= noteOffset+20; lines -= 10){
+    for(let lines = -10; lines >= noteOffset+25; lines -= 10){
       ctx.beginPath();
       ctx.moveTo(xOffset,yOffset+lines);
       ctx.lineTo(xOffset+25,yOffset+lines);
@@ -325,7 +327,6 @@ function drawNote(note,xOffset,yOffset){
   }
   else if(noteOffset > 20){
     for(let lines = 40; lines <= noteOffset+30; lines += 10){
-        console.log(noteOffset)
       ctx.beginPath();
       ctx.moveTo(xOffset-5,yOffset+lines);
       ctx.lineTo(xOffset+20,yOffset+lines);
@@ -334,19 +335,21 @@ function drawNote(note,xOffset,yOffset){
     }
 
   }
-  if(noteOffset <= 20 && isRest != 1){ //flips notes
-    isRest= 2
-    noteOffset += 18
-  }
-  ctx.drawImage(spriteSheet,noteType,32*isRest,32,32,xOffset,yOffset + noteOffset,32,32);
 
-  if(isDotted){
+  if(isDotted){//if the note is dotted draws the dot
     ctx.beginPath();
-
-    ctx.arc(xOffset+20, yOffset+25 + noteOffset, 3, 0, 2 * Math.PI);
+    ctx.arc(xOffset+25, yOffset+25 + noteOffset, 3, 0, 2 * Math.PI);
     ctx.fill();
     ctx.closePath();
   }
+
+  if(noteOffset <= 20 && isRest != 1){ //flips notes if above middle line
+    isRest= 2
+    noteOffset += 18
+  }
+  ctx.drawImage(spriteSheet,noteType,32*isRest,32,32,xOffset,yOffset + 1+ noteOffset,32,32);
+
+
 }
 
 /**draws the symbol symbol beside the note to the left*/
@@ -559,6 +562,8 @@ function setTitle(title){
   titleText.innerText = title
 }
 
+
+/*if the canvas was clicked*/
 function canvasClick(event){
 
   let canvasRect = canvas.getBoundingClientRect();
@@ -568,12 +573,14 @@ function canvasClick(event){
   changeCurrentNote(mouseX,mouseY+canvas.parentElement.scrollTop)
 }
 
+
+/**changes the current note based on mouse input*/
 function changeCurrentNote(mouseX,mouseY){
     console.log("X: "+ mouseX +" y "+ mouseY)
-
-
 }
 
+
+/**triggers when the screen is resized*/
 function resize(event){
    resizeCanvas(canvas.parentElement.offsetWidth,10);
    canvas.parentElement.style.height = Math.floor(window.innerHeight*0.85 ) + "px";
@@ -583,6 +590,26 @@ function resize(event){
 
    }
 }
+
+
+/**if the track was changed*/
+function changeTrack(event){
+  track = trackDropdown.selectedIndex;
+  if(track != 0){
+    currentInstrument = track-1;
+    stopPlay();
+  }
+}
+
+/**loads the current tracks into the dropdown*/
+function loadTracks(){
+  song.tracks.forEach( track => {
+    option = document.createElement("option");
+    option.text = track.name;
+    trackDropdown.options.add(option)
+  })
+}
+
 /********************IPC COMMUNICATIONS*************************/
 ipcRenderer.on("send-bpm", (event,bpm) => { //changes bpm to new given bpm
   setBPM(bpm);
