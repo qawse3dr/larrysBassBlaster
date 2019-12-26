@@ -104,7 +104,7 @@ var isPlaying = false;
 var isCountOn = false; //if starting count is on.
 var metronome = false; //if the metronome is on.
 var isSolo = false; //if the instrument is soloing
-var currentInstrument = 1;
+var currentInstrument = 0;
 var currentNote = 0;
 var currentTimeouts = [];
 //sets the rendering item for canvas
@@ -176,8 +176,8 @@ function drawMusic(){
       }
       ctx.beginPath();
       ctx.fillStyle = "#000000";
-      ctx.moveTo(xOffset+5,yOffset-5);
-      ctx.lineTo(xOffset+5,yOffset+spaceSize*5);
+      ctx.moveTo(xOffset+10,yOffset-5);
+      ctx.lineTo(xOffset+10,yOffset+spaceSize*5);
       ctx.closePath();
       ctx.stroke();
     }
@@ -311,8 +311,35 @@ function drawNote(note,xOffset,yOffset){
       noteType = Notes.sixteenthNote;
       break;
   }
+  if(notes ==0)
+  console.log(noteOffset)
+  //draw lines for note if its off the staff
+  if(noteOffset < -5){
+    for(let lines = -10; lines >= noteOffset+20; lines -= 10){
+      ctx.beginPath();
+      ctx.moveTo(xOffset,yOffset+lines);
+      ctx.lineTo(xOffset+25,yOffset+lines);
+      ctx.stroke();
+      ctx.closePath();
+    }
+  }
+  else if(noteOffset > 20){
+    for(let lines = 40; lines <= noteOffset+30; lines += 10){
+        console.log(noteOffset)
+      ctx.beginPath();
+      ctx.moveTo(xOffset-5,yOffset+lines);
+      ctx.lineTo(xOffset+20,yOffset+lines);
+      ctx.stroke();
+      ctx.closePath();
+    }
 
+  }
+  if(noteOffset <= 20 && isRest != 1){ //flips notes
+    isRest= 2
+    noteOffset += 18
+  }
   ctx.drawImage(spriteSheet,noteType,32*isRest,32,32,xOffset,yOffset + noteOffset,32,32);
+
   if(isDotted){
     ctx.beginPath();
 
@@ -400,7 +427,7 @@ function playSong(){
 
       delta += tone.Time(song.tracks[track].notes[note].length); //add offset
 
-      if(track == currentInstrument){ //sets up timers for when notes change
+      if(track == currentInstrument){ //setsvar isCountOn = false; //if starting count is on.
         timeoutOffsets.push(delta);
       }
       if(maxDelta<delta) maxDelta = delta;
