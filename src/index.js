@@ -58,46 +58,27 @@ var song = {
     clef:"Treble",
     instrument:"Guitar",
     notes: [{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
-          {name:"F#5",length:"8n"},{name:"F#5",length:"8n"},{name:"F5",length:"8n"},{name:"A#4",length:"8n"},{name:"F#4",length:"8n"},
-          {name:"G#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
+          {name:"F#5",length:"8n"},{name:"F#5",length:"8n"},{name:"F5",length:"8n"},{name:"A#4",length:"8n"},{name:"G#4",length:"8n"},
+          {name:"A#4",length:"8n"},{name:"F#4",length:"4n"},{name:"G#4",length:"8n"},{name:"A#4",length:"8n"},{name:"F#4",length:"4n"},
           {name:"D#4",length:"16n"},{name:"F4",length:"16n"},{name:"F#4",length:"4n."},{name:"F4",length:"8n"},{name:"F#4",length:"8n"},{name:"G#4",length:"4n."},{name:"F#4",length:"8n"}
           ,{name:"G#4",length:"4n."},{name:"A#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"4n"},{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
                   {name:"F#5",length:"8n"},{name:"F#5",length:"8n"},{name:"F5",length:"8n"},{name:"A#4",length:"8n"},{name:"F#4",length:"8n"},
                   {name:"G#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
                   {name:"D#4",length:"16n"},{name:"F4",length:"16n"},{name:"F#4",length:"4n."},{name:"F4",length:"8n"},{name:"F#4",length:"8n"},{name:"G#4",length:"4n."},{name:"F#4",length:"8n"}
-                  ,{name:"G#4",length:"4n."},{name:"A#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"4n"}
-
-
-                ,{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
-                      {name:"F#5",length:"8n"},{name:"F#5",length:"8n"},{name:"F5",length:"8n"},{name:"A#4",length:"8n"},{name:"F#4",length:"8n"},
-                      {name:"G#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
-                      {name:"D#4",length:"16n"},{name:"F4",length:"16n"},{name:"F#4",length:"4n."},{name:"F4",length:"8n"},{name:"F#4",length:"8n"},{name:"G#4",length:"4n."},{name:"F#4",length:"8n"}
-                      ,{name:"G#4",length:"4n."},{name:"A#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"4n"},{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
-                              {name:"F#5",length:"8n"},{name:"F#5",length:"8n"},{name:"F5",length:"8n"},{name:"A#4",length:"8n"},{name:"F#4",length:"8n"},
-                              {name:"G#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
-                              {name:"D#4",length:"16n"},{name:"F4",length:"16n"},{name:"F#4",length:"4n."},{name:"F4",length:"8n"},{name:"F#4",length:"8n"},{name:"G#4",length:"4n."},{name:"F#4",length:"8n"}
-                              ,{name:"G#4",length:"4n."},{name:"A#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"4n"},{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
-                                    {name:"F#5",length:"8n"},{name:"F#5",length:"8n"},{name:"F5",length:"8n"},{name:"A#4",length:"8n"},{name:"F#4",length:"8n"},
-                                    {name:"G#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
-                                    {name:"D#4",length:"16n"},{name:"F4",length:"16n"},{name:"F#4",length:"4n."},{name:"F4",length:"8n"},{name:"F#4",length:"8n"},{name:"G#4",length:"4n."},{name:"F#4",length:"8n"}
-                                    ,{name:"G#4",length:"4n."},{name:"A#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"4n"},{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
-                                            {name:"F#5",length:"8n"},{name:"F#5",length:"8n"},{name:"F5",length:"8n"},{name:"A#4",length:"8n"},{name:"F#4",length:"8n"},
-                                            {name:"G#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
-                                            {name:"D#4",length:"16n"},{name:"F4",length:"16n"},{name:"F#4",length:"4n."},{name:"F4",length:"8n"},{name:"F#4",length:"8n"},{name:"G#4",length:"4n."},{name:"F#4",length:"8n"}
-                                            ,{name:"G#4",length:"4n."},{name:"A#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"4n"}]
+                  ,{name:"G#4",length:"4n."},{name:"A#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"4n"}]
     },
     {
       clef:"Bass",
       instrument:"Bass",
-      notes:[{name:"F#2",length:"8n"},{name:"G#2",length:"8n"},{name:"A#2",length:"4n"},
-            {name:"F#3",length:"8n"},{name:"F#3",length:"8n"},{name:"F3",length:"8n"},{name:"A#2",length:"8n"},{name:"F#2",length:"8n"},
-            {name:"G#2",length:"8n"},{name:"A#2",length:"4n"},{name:"F#2",length:"8n"},{name:"G#2",length:"8n"},{name:"A#2",length:"4n"},
-            {name:"D#2",length:"16n"},{name:"F2",length:"16n"},{name:"F#2",length:"4n."},{name:"F2",length:"8n"},{name:"F#2",length:"8n"},{name:"G#4",length:"4n."},{name:"F#4",length:"8n"}
-            ,{name:"G#2",length:"4n."},{name:"A#2",length:"8n"},{name:"A#2",length:"4n"},{name:"F#2",length:"4n"},{name:"F#2",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
-                    {name:"F#3",length:"8n"},{name:"F#3",length:"8n"},{name:"F3",length:"8n"},{name:"A#2",length:"8n"},{name:"F#2",length:"8n"},
-                    {name:"G#2",length:"8n"},{name:"A#2",length:"4n"},{name:"F#2",length:"8n"},{name:"G#2",length:"8n"},{name:"A#2",length:"4n"},
-                    {name:"D#2",length:"16n"},{name:"F2",length:"16n"},{name:"F#2",length:"4n."},{name:"F2",length:"8n"},{name:"F#2",length:"8n"},{name:"G#4",length:"4n."},{name:"F#4",length:"8n"}
-                    ,{name:"G#2",length:"4n."},{name:"A#2",length:"8n"},{name:"A#2",length:"4n"},{name:"F#2",length:"4n"}]
+      notes:[{name:"F#3",length:"8n"},{name:"G#3",length:"8n"},{name:"A#3",length:"4n"},
+            {name:"F#4",length:"8n"},{name:"F#4",length:"8n"},{name:"F4",length:"8n"},{name:"A#3",length:"8n"},{name:"G#3",length:"8n"},
+            {name:"A#3",length:"8n"},{name:"F#3",length:"4n"},{name:"G#3",length:"8n"},{name:"A#3",length:"8n"},{name:"F#3",length:"4n"},
+            {name:"D#3",length:"16n"},{name:"F3",length:"16n"},{name:"F#3",length:"4n."},{name:"F3",length:"8n"},{name:"F#3",length:"8n"},{name:"G#3",length:"4n."},{name:"F#3",length:"8n"}
+            ,{name:"G#3",length:"4n."},{name:"A#3",length:"8n"},{name:"A#3",length:"4n"},{name:"F#3",length:"4n"},{name:"F#3",length:"8n"},{name:"G#3",length:"8n"},{name:"A#3",length:"4n"},
+                    {name:"F#4",length:"8n"},{name:"F#4",length:"8n"},{name:"F4",length:"8n"},{name:"A#3",length:"8n"},{name:"F#3",length:"8n"},
+                    {name:"G#3",length:"8n"},{name:"A#3",length:"4n"},{name:"F#3",length:"8n"},{name:"G#3",length:"8n"},{name:"A#3",length:"4n"},
+                    {name:"D#3",length:"16n"},{name:"F3",length:"16n"},{name:"F#3",length:"4n."},{name:"F3",length:"8n"},{name:"F#3",length:"8n"},{name:"G#3",length:"4n."},{name:"F#3",length:"8n"}
+                    ,{name:"G#3",length:"4n."},{name:"A#3",length:"8n"},{name:"A#3",length:"4n"},{name:"F#3",length:"4n"}]
     }
 ]
 };
@@ -123,7 +104,7 @@ var isPlaying = false;
 var isCountOn = false; //if starting count is on.
 var metronome = false; //if the metronome is on.
 var isSolo = false; //if the instrument is soloing
-var currentInstrument = 0;
+var currentInstrument = 1;
 var currentNote = 0;
 var currentTimeouts = [];
 //sets the rendering item for canvas
@@ -190,7 +171,7 @@ function drawMusic(){
     if(notes == currentNote){//drawing current note indicator
       /*checks if its still on the screen*/
 
-      if(yOffset >= 200+canvas.parentElement.scrollTop){
+      if(yOffset >= 200+canvas.parentElement.scrollTop && isPlaying){
         canvas.parentElement.scrollTop += 10
       }
       ctx.beginPath();
@@ -280,10 +261,13 @@ function drawNote(note,xOffset,yOffset){
     } else if([0,1,2,3,4,5,6,7].includes(Number(noteLetter))){
 
       let offsets = [140,105,70,35,0,-35,-70]
-      noteOffset += offsets[Number(noteLetter)] ;
-      if(song.tracks[currentInstrument].clef == "Treble"){
 
+      noteOffset += offsets[Number(noteLetter)];
+      if(song.tracks[currentInstrument].clef == "Bass"){
+        noteOffset -= 25
+        //bass is an octave down plus shift
       }
+
 
     }
 
@@ -565,6 +549,12 @@ function changeCurrentNote(mouseX,mouseY){
 
 function resize(event){
    resizeCanvas(canvas.parentElement.offsetWidth,10);
+   canvas.parentElement.style.height = Math.floor(window.innerHeight*0.85 ) + "px";
+
+   if(canvas.height < Number(canvas.parentElement.style.height.replace("px",""))){
+     resizeCanvas(0,Number(canvas.parentElement.style.height.replace("px","")));
+
+   }
 }
 /********************IPC COMMUNICATIONS*************************/
 ipcRenderer.on("send-bpm", (event,bpm) => { //changes bpm to new given bpm
@@ -616,14 +606,18 @@ electron.remote.getCurrentWindow().webContents.on('before-input-event', (event, 
         countToggle();
         break;
       case "ArrowLeft":
-        currentNote--;
+        if(currentNote > 0){
+          currentNote--;
+        }
         if(isPlaying){
           play(event);
           play(event);
         }
         break;
       case "ArrowRight":
-        currentNote++;
+        if(currentNote < song.tracks[currentInstrument].notes.length -1){
+          currentNote++;
+        }
         if(isPlaying){
           play(event);
           play(event);
