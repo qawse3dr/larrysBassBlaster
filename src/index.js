@@ -35,6 +35,10 @@ var width = canvas.width;
 //setting up spriteSheet containing music notes and symbols
 var spriteSheet = new Image;
 spriteSheet.src = "../res/images/musicNotes.png";
+
+var mouseX = 0;
+var mouseY = 0;
+var isClicked = false;
 //enum for where notes are located in spritesheet;
 var Notes = {
   wholeNote: 0,
@@ -205,6 +209,9 @@ function drawMusic(){
     }
   }
 
+  if(isClicked){
+    isClicked = false;
+  }
 
 }
 /**draws a barline*/
@@ -349,7 +356,15 @@ function drawNote(note,xOffset,yOffset){
   }
   ctx.drawImage(spriteSheet,noteType,32*isRest,32,32,xOffset,yOffset + 1+ noteOffset,32,32);
 
-
+  /**checks if it was clicked on*/
+  if(isClicked){
+    if((xOffset-10 <= mouseX && mouseX <= xOffset+32) &&
+       (yOffset-32 <= mouseY && mouseY <= yOffset+64)){
+         currentNote = notes
+         isClicked = false;
+         console.log(notes)
+        }
+  }
 }
 
 /**draws the symbol symbol beside the note to the left*/
@@ -567,16 +582,24 @@ function setTitle(title){
 function canvasClick(event){
 
   let canvasRect = canvas.getBoundingClientRect();
-  let mouseX = event.clientX - canvasRect.left;
-  let mouseY = event.clientY - canvasRect.top;
+  let x = event.clientX - canvasRect.left;
+  let y = event.clientY - canvasRect.top;
 
-  changeCurrentNote(mouseX,mouseY+canvas.parentElement.scrollTop)
+  changeCurrentNote(x,y)
 }
 
 
 /**changes the current note based on mouse input*/
-function changeCurrentNote(mouseX,mouseY){
-    console.log("X: "+ mouseX +" y "+ mouseY)
+function changeCurrentNote(x,y){
+  mouseX = x;
+  mouseY = y;
+  isClicked = true;
+  console.log("X: "+ mouseX +" y "+ mouseY)
+  drawMusic();
+  if(isPlaying){
+    play(null);
+    play(null);
+  }
 }
 
 
@@ -622,6 +645,7 @@ ipcRenderer.on("send-bpm", (event,bpm) => { //changes bpm to new given bpm
 
 ipcRenderer.on("send-title", (event,title) => { //changes bpm to new given bpm
   setTitle(title);
+  song.title = title;
 })
 
 //loading the JSON obj from file listener
