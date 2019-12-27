@@ -16,9 +16,9 @@ const dialog = electron.dialog;
 
 //Windows object.
 var win = null; //main
-var BPMwin = null; //bpm changer window
+var BPMWin = null; //bpm changer window
 var titleWin = null; //title Changer window
-
+var trackWin = null
 
 function createWindow () {
   // Create the browser window.
@@ -32,7 +32,7 @@ function createWindow () {
     }
   })
   //win.setResizable(false);
-  win.webContents.openDevTools();
+  //win.webContents.openDevTools();
   // and load the index.html of the app.
   win.loadFile('src/index.html')
 
@@ -87,6 +87,10 @@ var menu = electron.Menu.buildFromTemplate([
       },
       { //Opens Add new Track window
         label: "Add track",
+        click: newTrack
+      },
+      { //Opens editing window
+        label: "Editing Tools",
         click: newTrack
       },
       {
@@ -167,7 +171,7 @@ function redo(){
 /*Opens save bpm window*/
 function BPMWindow(){
   // Create the browser window.
-  BPMwin = new BrowserWindow({
+  BPMWin = new BrowserWindow({
     width: 200,
     height: 150,
     titleBarStyle: "hidden",
@@ -178,21 +182,44 @@ function BPMWindow(){
     }
   })
 
-  //BPMwin.webContents.openDevTools();
-  BPMwin.setMenuBarVisibility(false);
-  BPMwin.setResizable(false);
+  //BPMWin.webContents.openDevTools();
+  BPMWin.setMenuBarVisibility(false);
+  BPMWin.setResizable(false);
 
   // and load the index.html of the app.
-  BPMwin.loadFile('src/BPM.html')
-  BPMwin.show();
+  BPMWin.loadFile('src/BPM.html')
+  BPMWin.show();
 }
 
 function newTrack(){
-  console.log("WORK IN PROGRESS")
+  // Create the browser window.
+  trackWin = new BrowserWindow({
+    width: 300,
+    height: 200,
+    titleBarStyle: "hidden",
+    alwaysOnTop: false,
+    webPreferences: {
+      nodeIntegration: true,
+
+    }
+  })
+  //trackWin.webContents.openDevTools();
+  trackWin.setMenuBarVisibility(false);
+  trackWin.setResizable(false);
+
+  // and load the index.html of the app.
+  trackWin.loadFile('src/track.html')
+  trackWin.show();
+
 }
 /*Opens Prefernces window*/
 function preferences(){
 
+}
+
+/**Opens editing tools*/
+function editingTools(){
+    console.log("WORK IN PROGRESS")
 }
 
 function titleWindow(){
@@ -208,7 +235,7 @@ function titleWindow(){
     }
   })
 
-  //BPMwin.webContents.openDevTools();
+  //BPMWin.webContents.openDevTools();
   titleWin.setMenuBarVisibility(false);
   titleWin.setResizable(false);
 
@@ -228,7 +255,7 @@ app.on("ready",createWindow);
 //Runs when app closes(clean up)
 app.on("close", () => {
   win = null;
-  BPMwin = null;
+  BPMWin = null;
 })
 
 
@@ -239,15 +266,23 @@ ipcMain.on("send-bpm-to-main", (event,bpm) => {
 
 })
 
+//gets the title from titleWin and sends it to the mainWin
 ipcMain.on("send-title-to-main", (event,title) => {
-  //sends new bpm the main window
   win.webContents.send("send-title",title);
 
 })
+
+//asked to open bpm window
 ipcMain.on("open-bpm-window", (event) => {
   //opens bpm window
   BPMWindow();
 })
+
+//waitings for save to be called
 ipcMain.on("save", (event) => {
   save();
+})
+
+ipcMain.on("new-track",(event,track) => {
+  win.webContents.send("new-track",track);
 })

@@ -64,6 +64,7 @@ var song = {
     clef:"Treble",
     instrument:"Guitar",
     name:"Lead Guitar",
+    effects:"None",
     notes: [{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
           {name:"F#5",length:"8n"},{name:"F#5",length:"8n"},{name:"F5",length:"8n"},{name:"A#4",length:"8n"},{name:"G#4",length:"8n"},
           {name:"A#4",length:"8n"},{name:"F#4",length:"4n"},{name:"G#4",length:"8n"},{name:"A#4",length:"8n"},{name:"F#4",length:"4n"},
@@ -78,6 +79,7 @@ var song = {
       clef:"Bass",
       name:"Bass",
       instrument:"Bass",
+      effects:"None",
       notes:[{name:"F#3",length:"8n"},{name:"G#3",length:"8n"},{name:"A#3",length:"4n"},
             {name:"F#4",length:"8n"},{name:"F#4",length:"8n"},{name:"F4",length:"8n"},{name:"A#3",length:"8n"},{name:"G#3",length:"8n"},
             {name:"A#3",length:"8n"},{name:"F#3",length:"4n"},{name:"G#3",length:"8n"},{name:"A#3",length:"8n"},{name:"F#3",length:"4n"},
@@ -566,6 +568,7 @@ function loadFile(fileName){
     song = JSON.parse(data);
     setBPM(song.bpm);
     setTitle(song.title);
+    loadTracks();
 
   })
 }
@@ -626,11 +629,15 @@ function changeTrack(event){
 
 /**loads the current tracks into the dropdown*/
 function loadTracks(){
+  trackDropdown.options.length = 0; //clears all tracks
+  currentInstrument = 0;//goes back to current instrument
+  //loads new tracks
   song.tracks.forEach( track => {
     option = document.createElement("option");
     option.text = track.name;
     trackDropdown.options.add(option)
   })
+
 }
 
 /********************IPC COMMUNICATIONS*************************/
@@ -658,7 +665,12 @@ ipcRenderer.on("save-file", (event,fileName) => {
   saveFile(fileName);
   console.log(fileName)
   console.log("saved")
-})
+});
+
+ipcRenderer.on("new-track", (event,newTrack) => {
+  song.tracks.push(newTrack);
+  loadTracks();
+});
 /********************IPC COMMUNICATIONS*************************/
 
 

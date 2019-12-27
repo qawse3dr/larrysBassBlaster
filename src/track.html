@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+
+
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Add Track</title>
+    <link rel="stylesheet" href="../res/css/styles.css">
+    <link rel="stylesheet" href="../res/css/track.css">
+  </head>
+  <body>
+
+    <p>
+    Select Instrument:
+    <select id="instrument" class="instrument">
+      <option value="Bass">Bass</option>
+      <option value="Guitar">Guitar</option>
+    </select>
+    </p>
+
+
+    <p>
+      Select Effects:
+      <select id="effects" class="instrument">
+        <option value="None">None</option>
+        <option value="Distortion">Distortion</option>
+      </select>
+    </p>
+    <p>
+      Track Name:
+      <input type="text" placeholder="Name" id="nameText">
+    </p>
+
+    <div class="buttons">
+      <button type="button" id="cancel">Cancel</button>
+      <button type="button" id="add">Add Track</button>
+
+    </div>
+  <script src="track.js" charset="utf-8"></script>
+  </body>
+</html>
