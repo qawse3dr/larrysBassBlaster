@@ -229,6 +229,7 @@ function deleteTrack(){
     buttons: ["Yes","No"],
     message: "Would you like to delete the current track?",
     cancelId:1})
+  win.show()
   if(response == 0){//yes was selected
     win.webContents.send("delete-track");
   }
