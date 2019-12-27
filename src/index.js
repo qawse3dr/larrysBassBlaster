@@ -136,7 +136,9 @@ function render(){ //displays the song canvas.
 
 
   /**draws music*/
-  drawMusic();
+  if(song.tracks.length > 0){
+    drawMusic();
+  }
 }
 
 
@@ -381,6 +383,9 @@ function drawSymbol(symbol, xOffset,yOffset,noteShift){
 /*********************GRAPHICS************************/
 //plays the song when play is clicked or stops it if its already playing
 function play(event){ //plays the song or stops it.
+  if(song.tracks.length == 0){ //makes sure there is a track
+    return;
+  }
   if(!isPlaying){
     playSong();
   } else{ //shuts off the song. need to add in shut off at end of song.
@@ -669,6 +674,11 @@ ipcRenderer.on("save-file", (event,fileName) => {
 
 ipcRenderer.on("new-track", (event,newTrack) => {
   song.tracks.push(newTrack);
+  loadTracks();
+});
+
+ipcRenderer.on("delete-track", (event) => {
+  song.tracks.splice(currentInstrument,1);
   loadTracks();
 });
 /********************IPC COMMUNICATIONS*************************/

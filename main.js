@@ -32,7 +32,7 @@ function createWindow () {
     }
   })
   //win.setResizable(false);
-  //win.webContents.openDevTools();
+  win.webContents.openDevTools();
   // and load the index.html of the app.
   win.loadFile('src/index.html')
 
@@ -88,6 +88,10 @@ var menu = electron.Menu.buildFromTemplate([
       { //Opens Add new Track window
         label: "Add track",
         click: newTrack
+      },
+      { //deletes currentTrack
+        label: "Delete Current Track",
+        click: deleteTrack
       },
       { //Opens editing window
         label: "Editing Tools",
@@ -215,6 +219,19 @@ function newTrack(){
 /*Opens Prefernces window*/
 function preferences(){
 
+}
+
+/**asks if they wouldlike to delete current track*/
+function deleteTrack(){
+  let response = dialog.showMessageBox(win,
+
+    {
+    buttons: ["Yes","No"],
+    message: "Would you like to delete the current track?",
+    cancelId:1})
+  if(response == 0){//yes was selected
+    win.webContents.send("delete-track");
+  }
 }
 
 /**Opens editing tools*/

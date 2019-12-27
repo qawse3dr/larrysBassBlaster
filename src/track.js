@@ -21,13 +21,15 @@ function addTrack(event){
         "Please Enter A Name"
     )
   } else{
-    track = {
+    track = {//create new Track
       clef:getClef(instrument.value),
       instrument:instrument.value,
       name:nameText.value,
       effects: effect.value,
       notes: []
     }
+
+    //sends new track to main.
     electron.ipcRenderer.send("new-track",track);
     cancel();
   }
