@@ -68,7 +68,8 @@ var menu = electron.Menu.buildFromTemplate([
         click: load
       },
       {
-        type: "separator"
+        type: "separator",
+        role: "seperator"
       },
       {
         label: "Exit",
@@ -88,7 +89,8 @@ var menu = electron.Menu.buildFromTemplate([
         click: redo
       },
       {
-        type: "separator"
+        type: "separator",
+        role: "seperator"
       },
       { //Opens BPM Window
         label: "Change BPM",
@@ -111,7 +113,8 @@ var menu = electron.Menu.buildFromTemplate([
         click: editingTools
       },
       {
-        type: "separator"
+        type: "separator",
+        role: "seperator"
       },
       {
         label: "Preferences",
@@ -191,7 +194,6 @@ function BPMWindow(){
   BPMWin = new BrowserWindow({
     width: 200,
     height: 150,
-    titleBarStyle: "hidden",
     alwaysOnTop: false,
     webPreferences: {
       nodeIntegration: true,
@@ -213,7 +215,6 @@ function newTrack(){
   trackWin = new BrowserWindow({
     width: 300,
     height: 200,
-    titleBarStyle: "hidden",
     alwaysOnTop: false,
     webPreferences: {
       nodeIntegration: true,
@@ -254,7 +255,6 @@ function editingTools(){
   toolsWin = new BrowserWindow({
     width: 100,
     height: 296,
-    titleBarStyle: "hidden",
     alwaysOnTop: true,
     webPreferences: {
       nodeIntegration: true,
@@ -275,7 +275,6 @@ function titleWindow(){
   titleWin = new BrowserWindow({
     width: 400,
     height: 150,
-    titleBarStyle: "hidden",
     alwaysOnTop: false,
     webPreferences: {
       nodeIntegration: true,
