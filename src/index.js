@@ -322,8 +322,14 @@ function drawNote(note,xOffset,yOffset){
       break;
     case "8n.":
       noteType = Notes.eigthNote;
+      isDotted = true;
+      break;
     case "16n":
       noteType = Notes.sixteenthNote;
+      break;
+    case "16n.":
+      noteType = Notes.sixteenthNote;
+      isDotted = true;
       break;
   }
   //draw lines for note if its off the staff
@@ -364,7 +370,7 @@ function drawNote(note,xOffset,yOffset){
   if(isClicked){
     if((xOffset-10 <= mouseX && mouseX <= xOffset+32) &&
        (yOffset-32 <= mouseY && mouseY <= yOffset+64)){
-         currentNote = notes
+         currentNote = Number(notes)
          isClicked = false;
          console.log(notes)
         }
@@ -645,6 +651,12 @@ function loadTracks(){
 
 }
 
+electron.remote.getCurrentWindow().on("close", () => {
+  tone.Transport.stop();
+  synth.unsync();
+  synth.dispose()
+})
+
 /********************IPC COMMUNICATIONS*************************/
 ipcRenderer.on("send-bpm", (event,bpm) => { //changes bpm to new given bpm
   setBPM(bpm);
@@ -681,6 +693,82 @@ ipcRenderer.on("delete-track", (event) => {
   song.tracks.splice(currentInstrument,1);
   loadTracks();
 });
+
+ipcRenderer.on("new-note",(event,noteLength) =>{
+
+  let newNote = null;
+  if(song.tracks[currentInstrument].clef == "Bass"){
+    newNote = {name:"D3",length:noteLength};
+  } else {
+    newNote = {name:"E4",length:noteLength};
+  }
+  song.tracks[currentInstrument].notes.splice(Number(currentNote)+1,0,newNote);
+  currentNote++;
+})
+
+//adds a new rest at curentnote
+ipcRenderer.on("new-rest",(event,noteLength) =>{
+  let newRest = {name:"r",length:noteLength};
+
+  song.tracks[currentInstrument].notes.splice(Number(currentNote)+1,0,newRest);
+  currentNote++;
+})
+
+/*deletes the current note*/
+ipcRenderer.on("del-note",(event) => {
+    song.tracks[currentInstrument].notes.splice(Number(currentNote),1);
+})
+
+/*Toggles the sharp on the current note*/
+ipcRenderer.on("sharp",(event) => {
+  if(song.tracks[currentInstrument].notes[currentNote].name.includes("#")){
+    //get ride of sharp
+      song.tracks[currentInstrument].notes[currentNote].name =
+        song.tracks[currentInstrument].notes[currentNote].name.replace("#","");
+  } else if(song.tracks[currentInstrument].notes[currentNote].name.includes("b")){
+    //replace flat
+      song.tracks[currentInstrument].notes[currentNote].name =
+        song.tracks[currentInstrument].notes[currentNote].name.replace("b","#");
+  } else{
+    //no sharp
+    song.tracks[currentInstrument].notes[currentNote].name =
+      song.tracks[currentInstrument].notes[currentNote].name[0] + "#" +
+      song.tracks[currentInstrument].notes[currentNote].name[1];
+  }
+})
+
+/*Toggles the flat on the current note*/
+ipcRenderer.on("flat",(event) => {
+  if(song.tracks[currentInstrument].notes[currentNote].name.includes("b")){
+    //get ride of flat
+      song.tracks[currentInstrument].notes[currentNote].name =
+        song.tracks[currentInstrument].notes[currentNote].name.replace("b","");
+  } else if(song.tracks[currentInstrument].notes[currentNote].name.includes("#")){
+    //replace sharp
+      song.tracks[currentInstrument].notes[currentNote].name =
+        song.tracks[currentInstrument].notes[currentNote].name.replace("#","b");
+  } else{
+    //no flat
+    song.tracks[currentInstrument].notes[currentNote].name =
+      song.tracks[currentInstrument].notes[currentNote].name[0] + "b" +
+      song.tracks[currentInstrument].notes[currentNote].name[1];
+  }
+})
+
+/*Toggles the flat on the current note*/
+ipcRenderer.on("dot",(event) => {
+
+  if(song.tracks[currentInstrument].notes[currentNote].length.includes(".")){
+    console.log("test")
+    //get ride of dot
+    song.tracks[currentInstrument].notes[currentNote].length =
+      song.tracks[currentInstrument].notes[currentNote].length.replace(".","");
+  } else{
+    //no dot
+    song.tracks[currentInstrument].notes[currentNote].length += ".";
+  }
+})
+
 /********************IPC COMMUNICATIONS*************************/
 
 

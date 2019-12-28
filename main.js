@@ -18,7 +18,8 @@ const dialog = electron.dialog;
 var win = null; //main
 var BPMWin = null; //bpm changer window
 var titleWin = null; //title Changer window
-var trackWin = null
+var trackWin = null;
+var toolsWin = null;
 
 function createWindow () {
   // Create the browser window.
@@ -35,7 +36,16 @@ function createWindow () {
   win.webContents.openDevTools();
   // and load the index.html of the app.
   win.loadFile('src/index.html')
-
+  win.on("close", () => {
+    if(BPMWin != null) BPMWin.destroy();
+    BPMWin = null;
+    if(toolsWin) toolsWin.destroy();
+    toolsWin = null;
+    if(titleWin) titleWin.destroy();
+    titleWin = null;
+    if(trackWin) trackWin.destroy();
+    trackWin = null;
+  })
 }
 
 /*
@@ -95,7 +105,7 @@ var menu = electron.Menu.buildFromTemplate([
       },
       { //Opens editing window
         label: "Editing Tools",
-        click: newTrack
+        click: editingTools
       },
       {
         type: "separator"
@@ -229,7 +239,6 @@ function deleteTrack(){
     buttons: ["Yes","No"],
     message: "Would you like to delete the current track?",
     cancelId:1})
-  win.show()
   if(response == 0){//yes was selected
     win.webContents.send("delete-track");
   }
@@ -237,7 +246,25 @@ function deleteTrack(){
 
 /**Opens editing tools*/
 function editingTools(){
-    console.log("WORK IN PROGRESS")
+  // Create the browser window.
+  // Create the browser window.
+  toolsWin = new BrowserWindow({
+    width: 86,
+    height: 296,
+    titleBarStyle: "hidden",
+    alwaysOnTop: false,
+    webPreferences: {
+      nodeIntegration: true,
+
+    }
+  })
+
+  //toolsWin.webContents.openDevTools();
+  toolsWin.setMenuBarVisibility(false);
+  toolsWin.setResizable(false);
+  // and load the index.html of the app.
+  toolsWin.loadFile('src/tools.html')
+  toolsWin.show();
 }
 
 function titleWindow(){
@@ -256,12 +283,10 @@ function titleWindow(){
   //BPMWin.webContents.openDevTools();
   titleWin.setMenuBarVisibility(false);
   titleWin.setResizable(false);
-
   // and load the index.html of the app.
   titleWin.loadFile('src/title.html')
   titleWin.show();
 }
-
 
 Menu.setApplicationMenu(menu)
 
@@ -272,8 +297,16 @@ app.on("ready",createWindow);
 
 //Runs when app closes(clean up)
 app.on("close", () => {
+
   win = null;
+  if(BPMWin != null) BPMWin.destroy();
   BPMWin = null;
+  if(toolsWin) toolsWin.destroy();
+  toolsWin = null;
+  if(titleWin) titleWin.destroy();
+  titleWin = null;
+  if(trackWin) trackWin.destroy();
+  trackWin = null;
 })
 
 
@@ -303,4 +336,36 @@ ipcMain.on("save", (event) => {
 
 ipcMain.on("new-track",(event,track) => {
   win.webContents.send("new-track",track);
+})
+
+ipcMain.on("new-note",(event,noteLength) => {
+  win.webContents.send("new-note",noteLength);
+})
+
+ipcMain.on("new-rest",(event,noteLength) => {
+  win.webContents.send("new-rest",noteLength);
+})
+
+ipcMain.on("move-note-up",(event) => {
+  win.webContents.send("move-note-up");
+})
+
+ipcMain.on("move-down",(event) => {
+  win.webContents.send("move-note-down");
+})
+
+ipcMain.on("flat",(event) => {
+  win.webContents.send("flat");
+})
+
+ipcMain.on("sharp",(event) => {
+  win.webContents.send("sharp");
+})
+
+ipcMain.on("dot",(event) => {
+  win.webContents.send("dot");
+})
+
+ipcMain.on("del-note",(event) => {
+  win.webContents.send("del-note");
 })

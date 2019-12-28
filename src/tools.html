@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>TOOLS</title>
+    <link rel="stylesheet" href="../res/css/styles.css">
+    <link rel="stylesheet" href="../res/css/tools.css">
+  </head>
+  <body>
+    <button type="button" name="button" class="wholeNote" onclick="notePress(this)" value="1n"></button>
+    <button type="button" name="button" class="halfNote" onclick="notePress(this)" value="2n"></button>
+    <button type="button" name="button" class="quarterNote" onclick="notePress(this)" value="4n"></button>
+    <button type="button" name="button" class="eigthNote" onclick="notePress(this)" value="8n"></button>
+    <button type="button" name="button" class="sixteenthNote" onclick="notePress(this)" value="16n"></button>
+    <button type="button" name="button" class="wholeRest" onclick="restPress(this)" value="1n">whole</button>
+    <button type="button" name="button" class="halfRest" onclick="restPress(this)" value="2n">half</button>
+    <button type="button" name="button" class="quarterRest" onclick="restPress(this)" value="4n"></button>
+    <button type="button" name="button" class="eigthRest" onclick="restPress(this)" value="8n"></button>
+    <button type="button" name="button" class="sixteenthRest" onclick="restPress(this)" value="16n"></button>
+    <button type="button" name="button" class="noImage" onclick="moveUp()">^</button>
+    <button type="button" name="button" class="noImage" onclick="sharp()">#</button>
+    <button type="button" name="button" class="noImage" onclick="moveDown()">v</button>
+    <button type="button" name="button" class="noImage" onclick="flat()" ><i>b</i></button>
+    <button type="button" name="button" class="noImage" onclick="dot()"><i>*</i></button>
+    <button type="button" name="button" class="noImage" onclick="del()"><i>del</i></button>
+    <script src="tools.js" charset="utf-8"></script>
+  </body>
+</html>
