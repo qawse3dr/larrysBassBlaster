@@ -57,7 +57,7 @@ will also be the json object that is saved and loaded.
 this is an example song that will be loaded at startup.
 */
 var song = {
-  title: "Angel Beats! - Theme Of SSS",
+  title: "Title",
   bpm: 83,
   tracks:[]
 };

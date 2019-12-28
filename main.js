@@ -46,6 +46,9 @@ function createWindow () {
     if(trackWin) trackWin.destroy();
     trackWin = null;
   })
+
+  //opens toolkit at launch
+  editingTools();
 }
 
 /*
