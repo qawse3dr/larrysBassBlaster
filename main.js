@@ -68,6 +68,7 @@ var menu = electron.Menu.buildFromTemplate([
         click: load
       },
       {
+        type: "separator",
         role: "seperator"
       },
       {
@@ -88,6 +89,7 @@ var menu = electron.Menu.buildFromTemplate([
         click: redo
       },
       {
+        type: "separator",
         role: "seperator"
       },
       { //Opens BPM Window
@@ -111,6 +113,7 @@ var menu = electron.Menu.buildFromTemplate([
         click: editingTools
       },
       {
+        type: "separator",
         role: "seperator"
       },
       {
@@ -272,6 +275,7 @@ function titleWindow(){
   titleWin = new BrowserWindow({
     width: 400,
     height: 150,
+
     alwaysOnTop: false,
     webPreferences: {
       nodeIntegration: true,
