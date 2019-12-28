@@ -59,7 +59,16 @@ this is an example song that will be loaded at startup.
 var song = {
   title: "Title",
   bpm: 83,
-  tracks:[]
+  tracks:[
+    {
+      name:"Bass",
+      instrument:"Bass",
+      clef:"Bass",
+      effects:"None",
+      notes: [],
+
+    }
+  ]
 };
 
 
@@ -317,7 +326,7 @@ function drawNote(note,xOffset,yOffset){
     ctx.closePath();
   }
 
-  if(noteOffset <= 20 && isRest != 1){ //flips notes if above middle line
+  if(noteOffset <= -5 && isRest != 1){ //flips notes if above middle line
     isRest= 2
     noteOffset += 18
   }

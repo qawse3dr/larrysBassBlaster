@@ -252,10 +252,10 @@ function editingTools(){
   // Create the browser window.
   // Create the browser window.
   toolsWin = new BrowserWindow({
-    width: 86,
+    width: 100,
     height: 296,
     titleBarStyle: "hidden",
-    alwaysOnTop: false,
+    alwaysOnTop: true,
     webPreferences: {
       nodeIntegration: true,
 
