@@ -47,3 +47,25 @@ function dot(){
 function del(){
   electron.ipcRenderer.send("del-note");
 }
+
+//shortcuts cuts\
+electron.remote.getCurrentWindow().webContents.on('before-input-event', (event, input) => {
+
+
+  if(input.type == "keyDown"){
+    console.log(input.code)
+    switch(input.code){
+      case "ArrowUp":
+        electron.ipcRenderer.send("move-note-up");
+        break;
+      case "ArrowDown":
+        electron.ipcRenderer.send("move-note-down");
+        break;
+      case "ArrowRight":
+        electron.ipcRenderer.send("move-right");
+        break;
+      case "ArrowLeft":
+        electron.ipcRenderer.send("move-left")
+    }
+  }
+})

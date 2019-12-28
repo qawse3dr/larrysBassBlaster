@@ -372,3 +372,11 @@ ipcMain.on("dot",(event) => {
 ipcMain.on("del-note",(event) => {
   win.webContents.send("del-note");
 })
+
+ipcMain.on("move-left",(event) => {
+  win.webContents.send("move-left");
+})
+
+ipcMain.on("move-right",(event) => {
+  win.webContents.send("move-right");
+})

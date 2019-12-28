@@ -58,7 +58,7 @@ this is an example song that will be loaded at startup.
 */
 var song = {
   title: "Title",
-  bpm: 83,
+  bpm: 120,
   tracks:[
     {
       name:"Bass",
@@ -276,6 +276,8 @@ function drawNote(note,xOffset,yOffset){
       break;
     case "2n.":
       noteType = Notes.halfNote;
+      isDotted=true;
+      break;
     case "4n":
       noteType = Notes.quarterNote;
       break;
@@ -760,7 +762,8 @@ ipcRenderer.on("dot",(event) => {
 })
 
 /*shifts current note up one*/
-ipcRenderer.on("move-note-up",(event) => {
+ipcRenderer.on("move-note-up",moveUp);
+function moveUp(event){
   if(song.tracks[currentInstrument].notes.length == 0){
     return;
   }
@@ -812,10 +815,11 @@ ipcRenderer.on("move-note-up",(event) => {
   }
   //make changes;
   song.tracks[currentInstrument].notes[currentNote].name = noteName;
-})
+}
 
 /*shifts current note up one*/
-ipcRenderer.on("move-note-down",(event) => {
+ipcRenderer.on("move-note-down",moveDown);
+function moveDown(event){
   if(song.tracks[currentInstrument].notes.length == 0){
     return;
   }
@@ -868,6 +872,26 @@ ipcRenderer.on("move-note-down",(event) => {
   }
   //make changes;
   song.tracks[currentInstrument].notes[currentNote].name = noteName;
+}
+
+ipcRenderer.on("move-right", (event) => {
+  if(currentNote < song.tracks[currentInstrument].notes.length -1){
+    currentNote++;
+  }
+  if(isPlaying){
+    play(event);
+    play(event);
+  }
+})
+
+ipcRenderer.on("move-left", (event) => {
+  if(currentNote > 0){
+    currentNote--;
+  }
+  if(isPlaying){
+    play(event);
+    play(event);
+  }
 })
 /********************IPC COMMUNICATIONS*************************/
 
@@ -916,9 +940,10 @@ electron.remote.getCurrentWindow().webContents.on('before-input-event', (event, 
         }
         break;
       case "ArrowUp":
-        currentNote = 0;
-        canvas.parentElement.scrollTop = 0;
+        moveUp(null);
         break;
+      case "ArrowDown":
+        moveDown(null);
     }
   }
 })
