@@ -373,6 +373,7 @@ function getBPM(){
 }
 function setBPM(bpm){
   BPM = bpm
+  song.bpm = bpm;
   tone.Transport.bpm.value=BPM;
 }
 
