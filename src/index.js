@@ -769,6 +769,110 @@ ipcRenderer.on("dot",(event) => {
   }
 })
 
+/*shifts current note up one*/
+ipcRenderer.on("move-note-up",(event) => {
+  let noteName = song.tracks[currentInstrument].notes[currentNote].name;
+  if(noteName == "r"){
+    return;
+  }
+
+  numbers = [0,1,2,3,4,5,6,7];
+  switch(noteName[0]){
+    case "A":
+      noteName = noteName.replace("A","B")
+      break;
+    case "B": //special case add one to octave too
+      let change = 0;
+      noteName = noteName.replace("B","C")
+      if(numbers.includes(Number(noteName[1]))){
+        change = (Number(noteName[1])+1)
+        noteName = noteName[0] + (Number(noteName[1])+1)
+
+      }else{ //if there is a sharp or flat
+        change = (Number(noteName[2])+1)
+        noteName = noteName[0] + noteName[1] + (Number(noteName[2])+1)
+      }
+
+      if(song.tracks[currentInstrument].clef == "Bass"){
+        if(change > 4){ //too high
+          return;
+        }
+      } else if( change > 5){
+        return
+      }
+      break;
+    case "C":
+      noteName = noteName.replace("C","D")
+      break;
+    case "D":
+      noteName = noteName.replace("D","E")
+      break;
+    case "E":
+      noteName = noteName.replace("E","F")
+      break;
+    case "F":
+      noteName = noteName.replace("F","G")
+      break;
+    case "G":
+      noteName = noteName.replace("G","A")
+      break;
+  }
+  //make changes;
+  song.tracks[currentInstrument].notes[currentNote].name = noteName;
+})
+
+/*shifts current note up one*/
+ipcRenderer.on("move-note-down",(event) => {
+  let noteName = song.tracks[currentInstrument].notes[currentNote].name;
+  if(noteName == "r"){
+    return;
+  }
+  numbers = [0,1,2,3,4,5,6,7];
+  switch(noteName[0]){
+    case "A":
+      noteName = noteName.replace("A","G")
+      break;
+    case "B": //special case add one to octave too
+      noteName = noteName.replace("B","A")
+      break;
+    case "C": //go an ocavte down
+      let change = 0;
+      noteName = noteName.replace("C","B")
+      if(numbers.includes(Number(noteName[1]))){
+        change = (Number(noteName[1])-1);
+        noteName = noteName[0] + (Number(noteName[1])-1)
+      }else{ //if there is a sharp or flat
+        change = (Number(noteName[2])-1)
+        noteName = noteName[0] + noteName[1] + (Number(noteName[2])-1)
+      }
+
+      if(song.tracks[currentInstrument].clef == "Bass"){
+        if(change < 2){
+          return;
+        }
+      } else if( change < 2){
+        return;
+      }
+
+      break;
+
+
+    case "D":
+      noteName = noteName.replace("D","C")
+      break;
+    case "E":
+      noteName = noteName.replace("E","D")
+      break;
+    case "F":
+      noteName = noteName.replace("F","E")
+      break;
+    case "G":
+      noteName = noteName.replace("G","F")
+      break;
+  }
+  //make changes;
+  song.tracks[currentInstrument].notes[currentNote].name = noteName;
+})
 /********************IPC COMMUNICATIONS*************************/
 
 

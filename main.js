@@ -350,7 +350,7 @@ ipcMain.on("move-note-up",(event) => {
   win.webContents.send("move-note-up");
 })
 
-ipcMain.on("move-down",(event) => {
+ipcMain.on("move-note-down",(event) => {
   win.webContents.send("move-note-down");
 })
 
