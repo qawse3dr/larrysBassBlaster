@@ -59,52 +59,9 @@ this is an example song that will be loaded at startup.
 var song = {
   title: "Angel Beats! - Theme Of SSS",
   bpm: 83,
-
-  tracks:[{
-    clef:"Treble",
-    instrument:"Guitar",
-    name:"Lead Guitar",
-    effects:"None",
-    notes: [{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
-          {name:"F#5",length:"8n"},{name:"F#5",length:"8n"},{name:"F5",length:"8n"},{name:"A#4",length:"8n"},{name:"G#4",length:"8n"},
-          {name:"A#4",length:"8n"},{name:"F#4",length:"4n"},{name:"G#4",length:"8n"},{name:"A#4",length:"8n"},{name:"F#4",length:"4n"},
-          {name:"D#4",length:"16n"},{name:"F4",length:"16n"},{name:"F#4",length:"4n."},{name:"F4",length:"8n"},{name:"F#4",length:"8n"},{name:"G#4",length:"4n."},{name:"F#4",length:"8n"}
-          ,{name:"G#4",length:"4n."},{name:"A#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"4n"},{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
-                  {name:"F#5",length:"8n"},{name:"F#5",length:"8n"},{name:"F5",length:"8n"},{name:"A#4",length:"8n"},{name:"F#4",length:"8n"},
-                  {name:"G#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"8n"},{name:"G#4",length:"8n"},{name:"A#4",length:"4n"},
-                  {name:"D#4",length:"16n"},{name:"F4",length:"16n"},{name:"F#4",length:"4n."},{name:"F4",length:"8n"},{name:"F#4",length:"8n"},{name:"G#4",length:"4n."},{name:"F#4",length:"8n"}
-                  ,{name:"G#4",length:"4n."},{name:"A#4",length:"8n"},{name:"A#4",length:"4n"},{name:"F#4",length:"4n"}]
-    },
-    {
-      clef:"Bass",
-      name:"Bass",
-      instrument:"Bass",
-      effects:"None",
-      notes:[{name:"F#3",length:"8n"},{name:"G#3",length:"8n"},{name:"A#3",length:"4n"},
-            {name:"F#4",length:"8n"},{name:"F#4",length:"8n"},{name:"F4",length:"8n"},{name:"A#3",length:"8n"},{name:"G#3",length:"8n"},
-            {name:"A#3",length:"8n"},{name:"F#3",length:"4n"},{name:"G#3",length:"8n"},{name:"A#3",length:"8n"},{name:"F#3",length:"4n"},
-            {name:"D#3",length:"16n"},{name:"F3",length:"16n"},{name:"F#3",length:"4n."},{name:"F3",length:"8n"},{name:"F#3",length:"8n"},{name:"G#3",length:"4n."},{name:"F#3",length:"8n"}
-            ,{name:"G#3",length:"4n."},{name:"A#3",length:"8n"},{name:"A#3",length:"4n"},{name:"F#3",length:"4n"},{name:"F#3",length:"8n"},{name:"G#3",length:"8n"},{name:"A#3",length:"4n"},
-                    {name:"F#4",length:"8n"},{name:"F#4",length:"8n"},{name:"F4",length:"8n"},{name:"A#3",length:"8n"},{name:"F#3",length:"8n"},
-                    {name:"G#3",length:"8n"},{name:"A#3",length:"4n"},{name:"F#3",length:"8n"},{name:"G#3",length:"8n"},{name:"A#3",length:"4n"},
-                    {name:"D#3",length:"16n"},{name:"F3",length:"16n"},{name:"F#3",length:"4n."},{name:"F3",length:"8n"},{name:"F#3",length:"8n"},{name:"G#3",length:"4n."},{name:"F#3",length:"8n"}
-                    ,{name:"G#3",length:"4n."},{name:"A#3",length:"8n"},{name:"A#3",length:"4n"},{name:"F#3",length:"4n"}]
-    }
-]
+  tracks:[]
 };
 
-var noteRender = [
-{
-  noteNumber:0,
-  rect:{
-    x:0,
-    y:0,
-    width:0,
-    height:0
-  },
-  img:null
-}
-];
 
 loadTracks()
 //music vars
@@ -475,8 +432,11 @@ function playSong(){
   for(time in timeoutOffsets){ //sets the timer for changing notes
     currentTimeouts.push(setTimeout( () => {
       currentNote++;
-      if(currentNote == song.tracks[currentInstrument].notes.length)
-      stopPlay();
+      if(currentNote == song.tracks[currentInstrument].notes.length){
+        stopPlay();
+        currentNote = 0;
+      }
+
 
     }, timeoutOffsets[time]*1000));
   }
@@ -632,7 +592,8 @@ function resize(event){
 /**if the track was changed*/
 function changeTrack(event){
   track = trackDropdown.selectedIndex;
-  currentInstrument = track;
+  currentInstrument = Number(track);
+  currentNote = 0;
   if(isPlaying){
     stopPlay(); //stops playing if it current playing
   }
@@ -703,7 +664,11 @@ ipcRenderer.on("new-note",(event,noteLength) =>{
     newNote = {name:"E4",length:noteLength};
   }
   song.tracks[currentInstrument].notes.splice(Number(currentNote)+1,0,newNote);
-  currentNote++;
+  if(song.tracks[currentInstrument].notes.length != 1 ){
+    currentNote++;
+  } else { //makes sure it selects first note
+    currentNote = 0;
+  }
 })
 
 //adds a new rest at curentnote
@@ -711,16 +676,26 @@ ipcRenderer.on("new-rest",(event,noteLength) =>{
   let newRest = {name:"r",length:noteLength};
 
   song.tracks[currentInstrument].notes.splice(Number(currentNote)+1,0,newRest);
-  currentNote++;
+  if(song.tracks[currentInstrument].notes.length != 1 ){
+    currentNote++;
+  } else {
+    currentNote = 0;
+  }
 })
 
 /*deletes the current note*/
 ipcRenderer.on("del-note",(event) => {
+  if(song.tracks[currentInstrument].notes.length == 0){
+    return;
+  }
     song.tracks[currentInstrument].notes.splice(Number(currentNote),1);
 })
 
 /*Toggles the sharp on the current note*/
 ipcRenderer.on("sharp",(event) => {
+  if(song.tracks[currentInstrument].notes.length == 0){
+    return;
+  }
   if(song.tracks[currentInstrument].notes[currentNote].name.includes("#")){
     //get ride of sharp
       song.tracks[currentInstrument].notes[currentNote].name =
@@ -739,6 +714,9 @@ ipcRenderer.on("sharp",(event) => {
 
 /*Toggles the flat on the current note*/
 ipcRenderer.on("flat",(event) => {
+  if(song.tracks[currentInstrument].notes.length == 0){
+    return;
+  }
   if(song.tracks[currentInstrument].notes[currentNote].name.includes("b")){
     //get ride of flat
       song.tracks[currentInstrument].notes[currentNote].name =
@@ -757,9 +735,11 @@ ipcRenderer.on("flat",(event) => {
 
 /*Toggles the flat on the current note*/
 ipcRenderer.on("dot",(event) => {
-
+  if(song.tracks[currentInstrument].notes.length == 0){
+    return;
+  }
   if(song.tracks[currentInstrument].notes[currentNote].length.includes(".")){
-    console.log("test")
+
     //get ride of dot
     song.tracks[currentInstrument].notes[currentNote].length =
       song.tracks[currentInstrument].notes[currentNote].length.replace(".","");
@@ -771,6 +751,9 @@ ipcRenderer.on("dot",(event) => {
 
 /*shifts current note up one*/
 ipcRenderer.on("move-note-up",(event) => {
+  if(song.tracks[currentInstrument].notes.length == 0){
+    return;
+  }
   let noteName = song.tracks[currentInstrument].notes[currentNote].name;
   if(noteName == "r"){
     return;
@@ -823,6 +806,9 @@ ipcRenderer.on("move-note-up",(event) => {
 
 /*shifts current note up one*/
 ipcRenderer.on("move-note-down",(event) => {
+  if(song.tracks[currentInstrument].notes.length == 0){
+    return;
+  }
   let noteName = song.tracks[currentInstrument].notes[currentNote].name;
   if(noteName == "r"){
     return;

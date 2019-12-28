@@ -33,7 +33,7 @@ function createWindow () {
     }
   })
   //win.setResizable(false);
-  win.webContents.openDevTools();
+  //win.webContents.openDevTools();
   // and load the index.html of the app.
   win.loadFile('src/index.html')
   win.on("close", () => {
