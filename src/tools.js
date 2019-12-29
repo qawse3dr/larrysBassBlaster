@@ -48,6 +48,10 @@ function del(){
   electron.ipcRenderer.send("del-note");
 }
 
+/**repeats the last note*/
+function repeat(){
+  electron.ipcRenderer.send("repeat")
+}
 //shortcuts cuts\
 electron.remote.getCurrentWindow().webContents.on('before-input-event', (event, input) => {
 
@@ -66,6 +70,18 @@ electron.remote.getCurrentWindow().webContents.on('before-input-event', (event, 
         break;
       case "ArrowLeft":
         electron.ipcRenderer.send("move-left")
+        break;
+      case "NumpadDecimal":
+      case "Period":
+        electron.ipcRenderer.send("dot");
+        break;
+      case "Backspace":
+      case "Delete":
+        electron.ipcRenderer.send("del-note")
+        break;
+      case "KeyR":
+        electron.ipcRenderer.send("repeat")
+        break;
     }
   }
 })

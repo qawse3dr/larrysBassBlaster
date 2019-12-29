@@ -375,7 +375,7 @@ function play(event){ //plays the song or stops it.
 /*Creates the synth object*/
 function createSynth(){
   if(synth != null) synth.dispose()
-  synth = new tone.PolySynth().toMaster();
+  synth = new tone.PolySynth(5).toMaster();
 }
 /*Gets the BPM*/
 function getBPM(){
@@ -401,11 +401,12 @@ function playSong(){
   let timeoutOffsets = [];
   let startOffset = (isCountOn) ? tone.Time("4n")*8 : 0; //offset for start count
   let maxDelta = 0; //gets the length of the song.
+
   synth.sync(); //start syncing the tracks
 
   if(isCountOn){
     for(let i = 0; i < 8; i++)
-    synth.triggerAttackRelease("C2","32n",tone.Time("4n")*i,1);
+    synth.triggerAttackRelease("C7","32n",tone.Time("4n")*i,1);
   }
   //loops through and syncs tracks
   if(currentNote >= song.tracks[currentInstrument].notes.length){
@@ -437,7 +438,7 @@ function playSong(){
     if(metronome){ //metronome is enabled
       let delta = startOffset;
       for(let ticks = 0; ticks < getTimeInBeats(maxDelta); ticks ++){ //converts time to quarter notes
-        synth.triggerAttackRelease("C2","32n",delta,1);
+        synth.triggerAttackRelease("C7","32n",delta,1);
         delta += tone.Time("4n"); //add offset
       }
   }
@@ -696,12 +697,16 @@ ipcRenderer.on("new-rest",(event,noteLength) =>{
 })
 
 /*deletes the current note*/
-ipcRenderer.on("del-note",(event) => {
+ipcRenderer.on("del-note",delNote);
+function delNote(event) {
   if(song.tracks[currentInstrument].notes.length == 0){
     return;
   }
-    song.tracks[currentInstrument].notes.splice(Number(currentNote),1);
-})
+  song.tracks[currentInstrument].notes.splice(Number(currentNote),1);
+  if(song.tracks[currentInstrument].notes.length-1 < currentNote){
+    currentNote--;
+  }
+}
 
 /*Toggles the sharp on the current note*/
 ipcRenderer.on("sharp",(event) => {
@@ -746,7 +751,8 @@ ipcRenderer.on("flat",(event) => {
 })
 
 /*Toggles the flat on the current note*/
-ipcRenderer.on("dot",(event) => {
+ipcRenderer.on("dot",dot);
+function dot(event){
   if(song.tracks[currentInstrument].notes.length == 0){
     return;
   }
@@ -759,7 +765,19 @@ ipcRenderer.on("dot",(event) => {
     //no dot
     song.tracks[currentInstrument].notes[currentNote].length += ".";
   }
-})
+}
+
+/**Repeates last note*/
+ipcRenderer.on("repeat",repeat);
+function repeat(event){
+  let note = {
+    name: song.tracks[currentInstrument].notes[currentNote].name,
+    length: song.tracks[currentInstrument].notes[currentNote].length
+  }
+
+  song.tracks[currentInstrument].notes.splice(Number(currentNote)+1,0,note);
+  currentNote++;
+}
 
 /*shifts current note up one*/
 ipcRenderer.on("move-note-up",moveUp);
@@ -944,7 +962,27 @@ electron.remote.getCurrentWindow().webContents.on('before-input-event', (event, 
         break;
       case "ArrowDown":
         moveDown(null);
+        break;
+      case "NumpadDecimal":
+      case "Period":
+        dot(null)
+        break;
+      case "Backspace":
+      case "Delete":
+        delNote(null)
+        break;
+      case "KeyR":
+        repeat(null)
+        break;
     }
   }
 })
+
+/*prevents scrolling with arrowkeys*/
+window.onkeydown = (event) => {
+  if(event.key == "ArrowUp" || event.key == "ArrowDown"){
+
+    event.view.event.preventDefault();
+  }
+}
 /*******keyboard shortcuts*********/

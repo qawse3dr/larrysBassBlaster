@@ -195,6 +195,7 @@ function BPMWindow(){
     width: 200,
     height: 150,
     alwaysOnTop: false,
+    parent:win,
     webPreferences: {
       nodeIntegration: true,
 
@@ -216,6 +217,7 @@ function newTrack(){
     width: 300,
     height: 200,
     alwaysOnTop: false,
+    parent:win,
     webPreferences: {
       nodeIntegration: true,
 
@@ -252,9 +254,12 @@ function deleteTrack(){
 function editingTools(){
   // Create the browser window.
   // Create the browser window.
+
   toolsWin = new BrowserWindow({
     width: 100,
     height: 296,
+    x:400,
+    y:400,
     alwaysOnTop: true,
     webPreferences: {
       nodeIntegration: true,
@@ -275,7 +280,7 @@ function titleWindow(){
   titleWin = new BrowserWindow({
     width: 400,
     height: 150,
-
+    parent:win,
     alwaysOnTop: false,
     webPreferences: {
       nodeIntegration: true,
@@ -379,4 +384,8 @@ ipcMain.on("move-left",(event) => {
 
 ipcMain.on("move-right",(event) => {
   win.webContents.send("move-right");
+})
+
+ipcMain.on("repeat",(event)=>{
+  win.webContents.send("repeat");
 })
