@@ -698,6 +698,8 @@ function undo(event){
       switch(op.name){
         case "bpm": //undo bpm change
           BPM = op.data.old;
+          song.bpm = op.data.old;
+          tone.Transport.bpm.value=op.data.old;
           break;
         case "title":
           let title = op.data.old
@@ -1051,7 +1053,6 @@ electron.remote.getCurrentWindow().webContents.on('before-input-event', (event, 
      flat(null)
    } else if(shortcutHandler(input, config.shortcuts.undo)){
      undo(null)
-     console.log("undoi")
    } else if(shortcutHandler(input, config.shortcuts.redo)){
 
    }

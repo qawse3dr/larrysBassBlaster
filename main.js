@@ -33,7 +33,7 @@ config = {
     count: {key:"KeyC",Alt:false,Ctrl:false,shift:false,window:false},
     currentNoteLeft: {key:"ArrowLeft",Alt:false,Ctrl:false,shift:false,window:false},
     currentNoteRight: {key:"ArrowRight",Alt:false,Ctrl:false,shift:false,window:false},
-    shiftUp: {key:"ArrowDown",Alt:false,Ctrl:false,shift:false,window:false},
+    shiftUp: {key:"ArrowUp",Alt:false,Ctrl:false,shift:false,window:false},
     shiftDown: {key:"ArrowDown",Alt:false,Ctrl:false,shift:false,window:false},
     dot: {key:"Period",Alt:false,Ctrl:false,shift:false,window:false},
     dot2: {key:"NumpadDecimal",Alt:false,Ctrl:false,shift:false,window:false},
@@ -58,8 +58,8 @@ function createWindow () {
   // Create the browser window.
   win = new BrowserWindow({
     width: 800,
-    height: 600,
-    minHeight: 600,
+    height: 650,
+    minHeight: 650,
     minWidth: 800,
     webPreferences: {
       nodeIntegration: true
@@ -225,8 +225,8 @@ function redo(){
 function BPMWindow(){
   // Create the browser window.
   BPMWin = new BrowserWindow({
-    width: 200,
-    height: 150,
+    width: 250,
+    height: 175,
     alwaysOnTop: false,
     parent:win,
     webPreferences: {
@@ -330,7 +330,7 @@ function titleWindow(){
   // Create the browser window.
   titleWin = new BrowserWindow({
     width: 400,
-    height: 150,
+    height: 160,
     parent:win,
     alwaysOnTop: false,
     webPreferences: {

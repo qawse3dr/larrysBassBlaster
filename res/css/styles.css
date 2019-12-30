@@ -24,6 +24,7 @@ body{
 }
 select{
   margin-left: 80%;
+  width:100px;
 }
 canvas {
     position: relative;
