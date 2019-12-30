@@ -31,7 +31,7 @@ function addTrack(event){
       clef:getClef(instrument.value),
       instrument:instrument.value,
       name:nameText.value,
-      effects: effect.value,
+      effects: "None",
       notes: []
     }
 
