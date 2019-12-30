@@ -11,7 +11,12 @@ const submitBtn = document.getElementById("submitBtn")
 cancelBtn.addEventListener("click",cancel);
 submitBtn.addEventListener("click",submit);
 
-
+//configs
+var config = ipcRenderer.sendSync("getConfig");
+var isDarkMode = config.darkMode;
+if(isDarkMode){
+  document.getElementById("style").setAttribute("href","../res/css/stylesDark.css")
+}
 
 //event listener functions
 function cancel(){

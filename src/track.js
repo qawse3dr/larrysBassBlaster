@@ -2,6 +2,12 @@
 const electron = require("electron");
 
 
+//configs
+var config = electron.ipcRenderer.sendSync("getConfig");
+var isDarkMode = config.darkMode;
+if(isDarkMode){
+  document.getElementById("style").setAttribute("href","../res/css/stylesDark.css")
+}
 
 //document Elements
 const cancelBtn = document.getElementById("cancel");

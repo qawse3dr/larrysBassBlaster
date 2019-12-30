@@ -1,0 +1,57 @@
+button{
+  width:32px;
+  height:32px;
+  margin:0px;
+  border: 0px;
+  padding:0px;
+  background-image: url("../images/musicNotesDark.png");
+  vertical-align:top;
+  right:0px;
+  border-radius: 16px;
+
+}
+
+
+.noImage{
+  background-image:none;
+  font-size: 16pt;
+}
+.wholeNote{
+  background-position: 8px -8px;
+}
+
+.halfNote{
+  background-position: -26px 0px;
+}
+
+.quarterNote{
+  background-position: -58px 0px;
+}
+
+.eigthNote{
+  background-position: -90px 0px;
+}
+
+.sixteenthNote{
+  background-position: -122px 0px;
+}
+
+.wholeRest{
+  background-position: 8px -30px;
+}
+
+.halfRest{
+  background-position: -26px -36px;
+}
+
+.quarterRest{
+  background-position: -58px -32px;
+}
+
+.eigthRest{
+  background-position: -90px -32px;
+}
+
+.sixteenthRest{
+  background-position: -122px -32px;
+}

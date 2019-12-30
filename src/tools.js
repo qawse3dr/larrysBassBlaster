@@ -1,7 +1,13 @@
 
 const electron = require("electron");
 
-
+//configs
+var config = electron.ipcRenderer.sendSync("getConfig");
+var isDarkMode = config.darkMode;
+if(isDarkMode){
+  document.getElementById("style").setAttribute("href","../res/css/stylesDark.css")
+  document.getElementById("tool-style").setAttribute("href","../res/css/toolsDark.css")
+}
 
 /*******ONCLICK FUNCTIONS*********/
 
@@ -57,31 +63,52 @@ electron.remote.getCurrentWindow().webContents.on('before-input-event', (event, 
 
 
   if(input.type == "keyDown"){
-    console.log(input.code)
-    switch(input.code){
-      case "ArrowUp":
-        electron.ipcRenderer.send("move-note-up");
-        break;
-      case "ArrowDown":
-        electron.ipcRenderer.send("move-note-down");
-        break;
-      case "ArrowRight":
-        electron.ipcRenderer.send("move-right");
-        break;
-      case "ArrowLeft":
+    if(input.type == "keyDown"){
+      console.log(input.code)
+      if(shortcutHandler(input,config.shortcuts.play)){
+        play(event)
+      } else if(shortcutHandler(input, config.shortcuts.bpm)){
+        ipcRenderer.send("open-bpm-window");
+      } else if(shortcutHandler(input, config.shortcuts.solo)){
+        soloToggle()
+      } else if(shortcutHandler(input, config.shortcuts.metronome)){
+        metronomeToggle();
+      } else if(shortcutHandler(input, config.shortcuts.count)){
+        countToggle();
+      } else if(shortcutHandler(input, config.shortcuts.currentNoteLeft)){
         electron.ipcRenderer.send("move-left")
-        break;
-      case "NumpadDecimal":
-      case "Period":
+      } else if(shortcutHandler(input, config.shortcuts.currentNoteRight)){
+        electron.ipcRenderer.send("move-right");
+      } else if(shortcutHandler(input, config.shortcuts.shiftUp)){
+        electron.ipcRenderer.send("move-note-up");
+      } else if(shortcutHandler(input, config.shortcuts.shiftDown)){
+        electron.ipcRenderer.send("move-note-down");
+      } else if(shortcutHandler(input, config.shortcuts.dot) || shortcutHandler(input,config.shortcuts.dot2)){
         electron.ipcRenderer.send("dot");
-        break;
-      case "Backspace":
-      case "Delete":
-        electron.ipcRenderer.send("del-note")
-        break;
-      case "KeyR":
-        electron.ipcRenderer.send("repeat")
-        break;
+     } else if(shortcutHandler(input, config.shortcuts.del) || shortcutHandler(input,config.shortcuts.del2)){
+       electron.ipcRenderer.send("del-note")
+     } else if(shortcutHandler(input, config.shortcuts.repeatLastNote)){
+       electron.ipcRenderer.send("repeat")
+     } else if(shortcutHandler(input, config.shortcuts.sharp)){
+       electron.ipcRenderer.send("sharp");
+     } else if(shortcutHandler(input, config.shortcuts.flat)){
+       electron.ipcRenderer.send("flat");
+     } else if(shortcutHandler(input, config.shortcuts.undo)){
+
+     } else if(shortcutHandler(input, config.shortcuts.redo)){
+
+     }
     }
+    
   }
 })
+
+/**Returns if the event is true*/
+function shortcutHandler(input,keyCombo){
+
+  return (input.code == keyCombo.key
+     && input.shift == keyCombo.shift
+     && input.alt == keyCombo.Alt
+     && input.control == keyCombo.Ctrl
+     )
+}

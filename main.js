@@ -11,7 +11,7 @@ const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const Menu = electron.Menu;
 const dialog = electron.dialog;
-
+const fs = require("fs")
 
 
 //Windows object.
@@ -20,8 +20,41 @@ var BPMWin = null; //bpm changer window
 var titleWin = null; //title Changer window
 var trackWin = null;
 var toolsWin = null;
+var preWin = null;
+
+//config Files
+config = {
+  darkMode:false,
+  shortcuts: {
+    play:{key:"KeyP",Alt:false,Ctrl:false,shift:false,window:false},
+    bpm: {key:"KeyB",Alt:false,Ctrl:false,shift:false,window:false},
+    solo: {key:"KeyS",Alt:false,Ctrl:false,shift:false,window:false},
+    metronome: {key:"KeyM",Alt:false,Ctrl:false,shift:false,window:false},
+    count: {key:"KeyC",Alt:false,Ctrl:false,shift:false,window:false},
+    currentNoteLeft: {key:"ArrowLeft",Alt:false,Ctrl:false,shift:false,window:false},
+    currentNoteRight: {key:"ArrowRight",Alt:false,Ctrl:false,shift:false,window:false},
+    shiftUp: {key:"ArrowDown",Alt:false,Ctrl:false,shift:false,window:false},
+    shiftDown: {key:"ArrowDown",Alt:false,Ctrl:false,shift:false,window:false},
+    dot: {key:"Period",Alt:false,Ctrl:false,shift:false,window:false},
+    dot2: {key:"NumpadDecimal",Alt:false,Ctrl:false,shift:false,window:false},
+    del: {key:"Backspace",Alt:false,Ctrl:false,shift:false,window:false},
+    del2: {key:"Delete",Alt:false,Ctrl:false,shift:false,window:false},
+    repeatLastNote: {key:"KeyR",Alt:false,Ctrl:false,shift:false,window:false},
+    copy: {key:"KeyC",Alt:false,Ctrl:true,shift:false,window:false},
+    paste: {key:"KeyV",Alt:false,Ctrl:true,shift:false,window:false},
+    save: {key:"KeyS",Alt:false,Ctrl:true,shift:false,window:false},
+    sharp: {key:"Key3",Alt:false,Ctrl:false,shift:false,window:false},
+    flat: {key:"Key2",Alt:false,Ctrl:false,shift:false,window:false},
+    undo: {key:"KeyZ",Alt:false,Ctrl:true,shift:false,window:false},
+    redo: {key:"KeyZ",Alt:false,Ctrl:true,shift:true,window:false},
+  },
+  autoSave:false,
+  saveOnExit:false,
+}
 
 function createWindow () {
+
+  loadFile(".config")
   // Create the browser window.
   win = new BrowserWindow({
     width: 800,
@@ -46,9 +79,9 @@ function createWindow () {
     if(trackWin) trackWin.destroy();
     trackWin = null;
   })
-
   //opens toolkit at launch
   editingTools();
+  win.focus(); //gives focus to main window
 }
 
 /*
@@ -234,7 +267,25 @@ function newTrack(){
 }
 /*Opens Prefernces window*/
 function preferences(){
+  // Create the browser window.
+  preWin = new BrowserWindow({
+    width: 400,
+    height: 400 ,
+    alwaysOnTop: false,
+    parent:win,
+    webPreferences: {
+      nodeIntegration: true,
 
+    }
+  })
+
+  //BPMWin.webContents.openDevTools();
+  preWin.setMenuBarVisibility(false);
+  //preWin.setResizable(false);
+
+  // and load the index.html of the app.
+  preWin.loadFile('src/preferences.html')
+  preWin.show();
 }
 
 /**asks if they wouldlike to delete current track*/
@@ -257,7 +308,7 @@ function editingTools(){
 
   toolsWin = new BrowserWindow({
     width: 100,
-    height: 296,
+    height: 310,
     x:400,
     y:400,
     alwaysOnTop: true,
@@ -300,6 +351,36 @@ Menu.setApplicationMenu(menu)
 
 /****************MENU FUCNTIONS END*****************************/
 
+/*saves the current song to a song file using json*/
+function saveFile(fileName){
+  let data = JSON.stringify(config); //Turns objects into strings.
+  fs.writeFile(fileName,data,(err) => {
+    if(err){ //cretes error popup
+      electron.remote.dialog.showErrorBox("Invalid File",
+          err + "Please select a valid file");
+      throw err;
+    }
+
+  })
+}
+/*used for loading config file*/
+/**Loads file from file fileName
+parse it from a json file.
+*/
+function loadFile(fileName){
+  fs.readFile(fileName, (err,data) =>{
+    if(err){
+      //creates popup here
+      electron.remote.dialog.showErrorBox("Invalid File",
+          err + " No config file found");
+      throw err;
+    }
+    //loads the config
+    config = JSON.parse(data);
+
+
+  })
+}
 //Starts the app when its ready.
 app.on("ready",createWindow);
 
@@ -388,4 +469,7 @@ ipcMain.on("move-right",(event) => {
 
 ipcMain.on("repeat",(event)=>{
   win.webContents.send("repeat");
+})
+ipcMain.on("getConfig",(event)=>{
+  event.returnValue = config;
 })

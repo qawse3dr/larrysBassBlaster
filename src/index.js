@@ -19,6 +19,7 @@ const volumeSlider = document.getElementById("volume"); //slider
 const canvas = document.getElementById("song-canvas"); //render
 const trackDropdown = document.getElementById("track-dropdown")
 
+
 //Button Listener for playing.
 playBtn.addEventListener("click",play);
 metronomeBtn.addEventListener("click",metronomeToggle);
@@ -28,13 +29,30 @@ canvas.addEventListener("click",canvasClick);
 window.addEventListener("resize", resize)
 trackDropdown.addEventListener("change",changeTrack)
 
+
+/*holds operations done by user and the data added or changed
+each operation has a name and data
+data for each operation is unique*/
+var operation = []
+var operationIndex = 0; //allows for undoing and redoing operations
+var config = ipcRenderer.sendSync("getConfig");
+var isDarkMode = config.darkMode;
+if(isDarkMode){
+  document.getElementById("style").setAttribute("href","../res/css/stylesDark.css")
+}
 //Setting up graphics
 var ctx = canvas.getContext("2d");
 var height = canvas.height; //length and width of canvas
 var width = canvas.width;
 //setting up spriteSheet containing music notes and symbols
 var spriteSheet = new Image;
-spriteSheet.src = "../res/images/musicNotes.png";
+if(isDarkMode){
+  spriteSheet.src = "../res/images/musicNotesDark.png";
+}
+else{
+  spriteSheet.src = "../res/images/musicNotes.png";
+}
+
 
 var mouseX = 0;
 var mouseY = 0;
@@ -90,13 +108,19 @@ setInterval(render,16);
 setBPM(song.bpm);
 setTitle(song.title);
 
-
+operation = []
+operationIndex = 0;
 /*********************GRAPHICS************************/
 /**Renders the sheetMusic*/
 function render(){ //displays the song canvas.
 
-  //Paints Screen
-  fillScreen("#d3d3d3")
+  //Paints Screen\
+  if(isDarkMode){
+    fillScreen("#031a40")
+  }else{
+
+    fillScreen("#d3d3d3")
+  }
   /**draws BPM on canvas.*/
   renderBPM();
 
@@ -129,7 +153,12 @@ function fillScreen(colour){
 /**Draws the BPM.*/
 function renderBPM(){
   ctx.font = "12px Arial";   //default font.
-  ctx.fillStyle = "black";
+  if(isDarkMode){
+    ctx.fillStyle = "#808080"
+  } else{
+
+    ctx.fillStyle = "black";
+  }
   ctx.textAlign = "center";
   ctx.fillText("BPM: " + getBPM(),canvas.width-100,20);
 }
@@ -137,13 +166,19 @@ function renderBPM(){
 /**Draws the sheet music*/
 function drawMusic(){
   //the current width the notes take up on the current staff
-  let xOffset = 40; //x offset
+  let xOffset = 60; //x offset
   let yOffset = 100; //y offset
   let noteSpacing = 48; //how far apart the notes are
   let spaceSize = 10; // how far apart the lines are
   let screenHeight = 500; //the parents screenHeight
   let barCounter = 0;//used to see where the bar lines should be drawn
-
+  if(isDarkMode){
+    ctx.fillStyle  = "#808080";
+    ctx.strokeStyle = '#808080';
+  } else{
+    ctx.fillStyle = "#000000";
+    ctx.strokeStyle = '#000000';
+  }
   drawStaff(yOffset,spaceSize); //draws a staff at an offset on y=0
   for(notes in song.tracks[currentInstrument].notes){
     if(notes == currentNote){//drawing current note indicator
@@ -153,7 +188,6 @@ function drawMusic(){
         canvas.parentElement.scrollTop += 10
       }
       ctx.beginPath();
-      ctx.fillStyle = "#000000";
       ctx.moveTo(xOffset+10,yOffset-5);
       ctx.lineTo(xOffset+10,yOffset+spaceSize*5);
       ctx.closePath();
@@ -168,7 +202,7 @@ function drawMusic(){
     }
     xOffset += noteSpacing; //adds space for next note
     if(xOffset >= (width-80)){
-      xOffset = 40;
+      xOffset = 60;
       //creates new staff
       yOffset += spaceSize*5 + 75;
       if(yOffset+50 > height){ //increase canvas size.
@@ -186,6 +220,7 @@ function drawMusic(){
 }
 /**draws a barline*/
 function drawBar(xOffset,yOffset,spaceSize){
+
     ctx.beginPath();
     ctx.moveTo(xOffset + 30,yOffset);
     ctx.lineTo(xOffset + 30,yOffset + spaceSize*4);
@@ -195,7 +230,11 @@ function drawBar(xOffset,yOffset,spaceSize){
 /**Draws a staff with the offset of y=offset*/
 function drawStaff(offset,spaceSize){
 
-
+  if(song.tracks[currentInstrument].clef === "Treble"){
+    ctx.drawImage(spriteSheet,160,0,64,64,-10,offset-10,64,64);
+  } else {
+    ctx.drawImage(spriteSheet,224,0,64,64,-20,offset-10,64,64);
+  }
   for(let y = offset; y < offset + spaceSize*5; y += spaceSize  ){
     ctx.beginPath();
     ctx.moveTo(40,y);
@@ -332,7 +371,7 @@ function drawNote(note,xOffset,yOffset){
     isRest= 2
     noteOffset += 18
   }
-  ctx.drawImage(spriteSheet,noteType,32*isRest,32,32,xOffset,yOffset + 1+ noteOffset,32,32);
+  ctx.drawImage(spriteSheet,noteType,32*isRest,32,32,xOffset+1,yOffset + 1+ noteOffset,32,32);
 
   /**checks if it was clicked on*/
   if(isClicked){
@@ -348,7 +387,6 @@ function drawNote(note,xOffset,yOffset){
 /**draws the symbol symbol beside the note to the left*/
 function drawSymbol(symbol, xOffset,yOffset,noteShift){
   ctx.font = "12px Arial";   //default font.
-  ctx.fillStyle = "black";
   ctx.textAlign = "center";
 
   ctx.fillText(symbol,xOffset-5,yOffset+noteShift+25);
@@ -383,6 +421,8 @@ function getBPM(){
   /*Sets the BPM to local var and to the synth*/
 }
 function setBPM(bpm){
+
+  pushOperation({name:"bpm",data:{old:BPM,new:bpm}}) //used for undoing and redoing
   BPM = bpm
   song.bpm = bpm;
   tone.Transport.bpm.value=BPM;
@@ -477,49 +517,40 @@ function getTimeInBeats(time){
 /*toggle the boolean metronome  also changing colour of button*/
 function metronomeToggle(){
   metronome = (metronome) ? false : true;
-  if(metronome){
-    metronomeBtn.style.background="#4b81a6"
-  } else {
-    metronomeBtn.style.background="lavender";
-  }
-  //if it is playing it stops and restarts the song with the new feature
-  if(isPlaying){
-    stopPlay();
-    playSong();
-  }
+  shiftButtonColour(metronome,metronomeBtn)
 }
 
 /*toggles the solo boolean  also changing colour of button*/
 function soloToggle(){
   isSolo = (isSolo) ? false : true;
-  if(isSolo){
-    soloBtn.style.background="#4b81a6"
-  } else {
-    soloBtn.style.background="lavender";
-  }
-  //if it is playing it stops and restarts the song with the new feature
-  if(isPlaying){
-    stopPlay();
-    playSong();
-  }
+  shiftButtonColour(isSolo,soloBtn)
 }
 
 /*toggle the count boolean also changing colour of button*/
 function countToggle(){
   isCountOn = (isCountOn) ? false : true;
-  if(isCountOn){
-    countBtn.style.background="#4b81a6"
-  } else {
-    countBtn.style.background="lavender";
-  }
+  shiftButtonColour(isCountOn,countBtn);
   //if it is playing it stops and restarts the song with the new feature
+
+}
+
+/**shifts the button colour to based on given boolean and button*/
+function shiftButtonColour(condition,btn){
+  if(condition){
+    btn.style.background="#4b81a6"
+  } else {
+    if(isDarkMode){
+      btn.style.background="#00008b"
+    } else{
+      btn.style.background="lavender";
+    }
+  }
   if(isPlaying){
     stopPlay();
     playSong();
   }
 
 }
-
 /*********MUSIC FUNCTIONS*************/
 
 
@@ -560,6 +591,7 @@ function loadFile(fileName){
 
 /*****************DOCUEMNT interaction************/
 function setTitle(title){
+  pushOperation({name:"title",data:{old:song.title,new:title}})
   let titleText = document.getElementById("title");
   titleText.innerText = title
 }
@@ -631,6 +663,51 @@ electron.remote.getCurrentWindow().on("close", () => {
   synth.dispose()
 })
 
+/**Pushes a operation onto the stack;*/
+function pushOperation(obj){
+
+  //overwrites all data ontop of the  index of the stack.
+  console.log(operationIndex)
+  operation.length = operationIndex +1;
+  operation.push(obj); //pushes obj onto the stack
+  operationIndex++;
+}
+
+//gets the item at the stack and lowers the stack but does not delete it
+function popOperation(){
+  if(operation.length == 0 || operationIndex == -1){
+    return null;
+  }
+  operationIndex--; //goes down an index
+  return operation[operationIndex+1];
+}
+
+//gets the item above in the stack and pushes it on
+function pullOperation(){
+  if(operation.length == operationIndex+1){
+    return null;
+  }
+  operationIndex++
+  return operation[index-1];
+}
+
+/*undos last operation*/
+function undo(event){
+  op = popOperation()
+  if(op != null){ //no operation to undo
+      switch(op.name){
+        case "bpm": //undo bpm change
+          BPM = op.data.old;
+          break;
+        case "title":
+          let title = op.data.old
+          let titleText = document.getElementById("title");
+          titleText.innerText = title
+          song.title = title
+          break;
+      }
+  }
+}
 /********************IPC COMMUNICATIONS*************************/
 ipcRenderer.on("send-bpm", (event,bpm) => { //changes bpm to new given bpm
   setBPM(bpm);
@@ -709,8 +786,9 @@ function delNote(event) {
 }
 
 /*Toggles the sharp on the current note*/
-ipcRenderer.on("sharp",(event) => {
-  if(song.tracks[currentInstrument].notes.length == 0){
+ipcRenderer.on("sharp", sharp);
+function sharp(event){
+  if(song.tracks[currentInstrument].notes.length == 0 ||song.tracks[currentInstrument].notes[currentNote].name == "r" ){
     return;
   }
   if(song.tracks[currentInstrument].notes[currentNote].name.includes("#")){
@@ -727,11 +805,12 @@ ipcRenderer.on("sharp",(event) => {
       song.tracks[currentInstrument].notes[currentNote].name[0] + "#" +
       song.tracks[currentInstrument].notes[currentNote].name[1];
   }
-})
+}
 
 /*Toggles the flat on the current note*/
-ipcRenderer.on("flat",(event) => {
-  if(song.tracks[currentInstrument].notes.length == 0){
+ipcRenderer.on("flat",flat);
+function flat(event){
+  if(song.tracks[currentInstrument].notes.length == 0 ||song.tracks[currentInstrument].notes[currentNote].name == "r"){
     return;
   }
   if(song.tracks[currentInstrument].notes[currentNote].name.includes("b")){
@@ -748,7 +827,7 @@ ipcRenderer.on("flat",(event) => {
       song.tracks[currentInstrument].notes[currentNote].name[0] + "b" +
       song.tracks[currentInstrument].notes[currentNote].name[1];
   }
-})
+}
 
 /*Toggles the flat on the current note*/
 ipcRenderer.on("dot",dot);
@@ -770,6 +849,9 @@ function dot(event){
 /**Repeates last note*/
 ipcRenderer.on("repeat",repeat);
 function repeat(event){
+  if(song.tracks[currentInstrument].notes.length == 0){
+    return; //no note to repeat
+  }
   let note = {
     name: song.tracks[currentInstrument].notes[currentNote].name,
     length: song.tracks[currentInstrument].notes[currentNote].length
@@ -911,78 +993,90 @@ ipcRenderer.on("move-left", (event) => {
     play(event);
   }
 })
+
 /********************IPC COMMUNICATIONS*************************/
 
 
 /*****keyboard shortcuts************/
 electron.remote.getCurrentWindow().webContents.on('before-input-event', (event, input) => {
 
-  if(input.type == "keyDown" && input.control){
-    if(input.code == "KeyS"){
-      ipcRenderer.send("save");
-    }
-  } else if(input.type == "keyDown"){
+
+  if(input.type == "keyDown"){
     console.log(input.code)
-    switch(input.code){
-      case "KeyP":
-        play(event)
-        break;
-      case "KeyB":
-        ipcRenderer.send("open-bpm-window");
-        break;
-      case "KeyS":
-        soloToggle()
-        break;
-      case "KeyM":
-        metronomeToggle();
-        break;
-      case "KeyC":
-        countToggle();
-        break;
-      case "ArrowLeft":
-        if(currentNote > 0){
-          currentNote--;
-        }
-        if(isPlaying){
-          play(event);
-          play(event);
-        }
-        break;
-      case "ArrowRight":
-        if(currentNote < song.tracks[currentInstrument].notes.length -1){
-          currentNote++;
-        }
-        if(isPlaying){
-          play(event);
-          play(event);
-        }
-        break;
-      case "ArrowUp":
-        moveUp(null);
-        break;
-      case "ArrowDown":
-        moveDown(null);
-        break;
-      case "NumpadDecimal":
-      case "Period":
-        dot(null)
-        break;
-      case "Backspace":
-      case "Delete":
-        delNote(null)
-        break;
-      case "KeyR":
-        repeat(null)
-        break;
-    }
+    if(shortcutHandler(input,config.shortcuts.play)){
+      play(event)
+    } else if(shortcutHandler(input, config.shortcuts.bpm)){
+      ipcRenderer.send("open-bpm-window");
+    } else if(shortcutHandler(input, config.shortcuts.solo)){
+      soloToggle()
+    } else if(shortcutHandler(input, config.shortcuts.metronome)){
+      metronomeToggle();
+    } else if(shortcutHandler(input, config.shortcuts.count)){
+      countToggle();
+    } else if(shortcutHandler(input, config.shortcuts.currentNoteLeft)){
+      if(currentNote > 0){
+        currentNote--;
+      }
+      if(isPlaying){
+        play(event);
+        play(event);
+      }
+    } else if(shortcutHandler(input, config.shortcuts.currentNoteRight)){
+      if(currentNote < song.tracks[currentInstrument].notes.length -1){
+        currentNote++;
+      }
+      if(isPlaying){
+        play(event);
+        play(event);
+      }
+    } else if(shortcutHandler(input, config.shortcuts.shiftUp)){
+      moveUp(null);
+    } else if(shortcutHandler(input, config.shortcuts.shiftDown)){
+      moveDown(null);
+    } else if(shortcutHandler(input, config.shortcuts.dot) || shortcutHandler(input,config.shortcuts.dot2)){
+      dot(null)
+   } else if(shortcutHandler(input, config.shortcuts.del) || shortcutHandler(input,config.shortcuts.del2)){
+     delNote(null)
+   } else if(shortcutHandler(input, config.shortcuts.repeatLastNote)){
+     repeat(null)
+   } else if(shortcutHandler(input, config.shortcuts.copy)){
+
+   } else if(shortcutHandler(input, config.shortcuts.paste)){
+
+   } else if(shortcutHandler(input, config.shortcuts.save)){
+     ipcRenderer.send("save");
+   } else if(shortcutHandler(input, config.shortcuts.sharp)){
+     sharp(null)
+   } else if(shortcutHandler(input, config.shortcuts.flat)){
+     flat(null)
+   } else if(shortcutHandler(input, config.shortcuts.undo)){
+     undo(null)
+     console.log("undoi")
+   } else if(shortcutHandler(input, config.shortcuts.redo)){
+
+   }
   }
+
 })
 
-/*prevents scrolling with arrowkeys*/
+/*prevents scrolling with arrowkeys and spacebar*/
 window.onkeydown = (event) => {
   if(event.key == "ArrowUp" || event.key == "ArrowDown"){
 
     event.view.event.preventDefault();
   }
+  if(event.key == "Space"){
+    event.view.event.preventDefault();
+  }
+}
+
+/**Returns if the event is true*/
+function shortcutHandler(input,keyCombo){
+
+  return (input.code == keyCombo.key
+     && input.shift == keyCombo.shift
+     && input.alt == keyCombo.Alt
+     && input.control == keyCombo.Ctrl
+     )
 }
 /*******keyboard shortcuts*********/

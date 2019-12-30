@@ -9,6 +9,12 @@ const titleText = document.getElementById("title-text");
 cancelBtn.addEventListener("click",cancel);
 submitBtn.addEventListener("click",submit);
 
+//configs
+var config = ipcRenderer.sendSync("getConfig");
+var isDarkMode = config.darkMode;
+if(isDarkMode){
+  document.getElementById("style").setAttribute("href","../res/css/stylesDark.css")
+}
 
 /**Cancels change exits with doing nothing*/
 function cancel(event){
