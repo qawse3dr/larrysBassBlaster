@@ -57,6 +57,9 @@ else{
 var mouseX = 0;
 var mouseY = 0;
 var isClicked = false;
+var copyStart = -1;
+var copyEnd = -1;
+var copyTrack = -1
 //enum for where notes are located in spritesheet;
 var Notes = {
   wholeNote: 0,
@@ -99,7 +102,7 @@ var isCountOn = false; //if starting count is on.
 var metronome = false; //if the metronome is on.
 var isSolo = false; //if the instrument is soloing
 var currentInstrument = 0;
-var currentNote = 0;
+var currentNote = -1;
 var currentTimeouts = [];
 //sets the rendering item for canvas
 setInterval(render,16);
@@ -179,11 +182,17 @@ function drawMusic(){
     ctx.fillStyle = "#000000";
     ctx.strokeStyle = '#000000';
   }
+  if(currentNote == -1){
+    ctx.beginPath();
+    ctx.moveTo(xOffset-5,yOffset-5);
+    ctx.lineTo(xOffset-5,yOffset+spaceSize*5);
+    ctx.closePath();
+    ctx.stroke();
+  }
   drawStaff(yOffset,spaceSize); //draws a staff at an offset on y=0
   for(notes in song.tracks[currentInstrument].notes){
     if(notes == currentNote){//drawing current note indicator
       /*checks if its still on the screen*/
-
       if(yOffset >= 200+canvas.parentElement.scrollTop && isPlaying){
         canvas.parentElement.scrollTop += 10
       }
@@ -192,6 +201,13 @@ function drawMusic(){
       ctx.lineTo(xOffset+10,yOffset+spaceSize*5);
       ctx.closePath();
       ctx.stroke();
+    }
+    if(notes == copyStart || notes == copyEnd){
+
+      ctx.beginPath();
+      ctx.arc(xOffset, yOffset-15, 5, 0, 2 * Math.PI);
+      ctx.fill();
+      ctx.closePath();
     }
     drawNote(notes,xOffset,yOffset);
 
@@ -443,7 +459,9 @@ function playSong(){
   let maxDelta = 0; //gets the length of the song.
 
   synth.sync(); //start syncing the tracks
-
+  if(currentNote == -1){
+    currentNote=0;
+  }
   if(isCountOn){
     for(let i = 0; i < 8; i++)
     synth.triggerAttackRelease("C7","32n",tone.Time("4n")*i,1);
@@ -949,7 +967,7 @@ function moveDown(event){
       }
 
       if(song.tracks[currentInstrument].clef == "Bass"){
-        if(change < 2){
+        if(change < 1 ){
           return;
         }
       } else if( change < 2){
@@ -987,7 +1005,7 @@ ipcRenderer.on("move-right", (event) => {
 })
 
 ipcRenderer.on("move-left", (event) => {
-  if(currentNote > 0){
+  if(currentNote > -1){
     currentNote--;
   }
   if(isPlaying){
@@ -996,6 +1014,8 @@ ipcRenderer.on("move-left", (event) => {
   }
 })
 
+ipcRenderer.on("copy",copy);
+ipcRenderer.on("paste",paste);
 /********************IPC COMMUNICATIONS*************************/
 
 
@@ -1016,7 +1036,7 @@ electron.remote.getCurrentWindow().webContents.on('before-input-event', (event, 
     } else if(shortcutHandler(input, config.shortcuts.count)){
       countToggle();
     } else if(shortcutHandler(input, config.shortcuts.currentNoteLeft)){
-      if(currentNote > 0){
+      if(currentNote > -1){
         currentNote--;
       }
       if(isPlaying){
@@ -1042,9 +1062,9 @@ electron.remote.getCurrentWindow().webContents.on('before-input-event', (event, 
    } else if(shortcutHandler(input, config.shortcuts.repeatLastNote)){
      repeat(null)
    } else if(shortcutHandler(input, config.shortcuts.copy)){
-
+     copy(null);
    } else if(shortcutHandler(input, config.shortcuts.paste)){
-
+     paste(null);
    } else if(shortcutHandler(input, config.shortcuts.save)){
      ipcRenderer.send("save");
    } else if(shortcutHandler(input, config.shortcuts.sharp)){
@@ -1081,3 +1101,50 @@ function shortcutHandler(input,keyCombo){
      )
 }
 /*******keyboard shortcuts*********/
+
+
+function copy(event){
+  if(copyStart == -1){
+    copyStart = currentNote;
+    copyTrack = currentInstrument;
+  } else if(copyEnd == -1 && currentInstrument == copyTrack){
+
+    copyEnd = currentNote
+  } else{
+    copyStart = -1;
+    copyEnd = -1;
+    copyStart = currentNote;
+    copyTrack = currentInstrument;
+  }
+
+}
+
+function paste(event){
+  if(copyStart != -1 && copyEnd == -1){//only copies 1 note
+    let copyNote = {name:song.tracks[copyTrack].notes[copyStart].name,
+                    length:song.tracks[copyTrack].notes[copyStart].length}
+    song.tracks[currentInstrument].notes.splice(Number(currentNote)+1,0,copyNote);
+    if(song.tracks[currentInstrument].notes.length != 1 ){
+      currentNote++;
+    } else {
+      currentNote = 0;
+    }
+  } else if(copyStart != -1 && copyEnd != -1){ //copies section
+    let copyNote;
+    if(copyStart > copyEnd){
+      let temp = copyStart;
+      copyStart = copyEnd;
+      copyEnd = temp;
+    }
+    for(let x = copyStart; x <= copyEnd; x++){
+      copyNote = {name:song.tracks[copyTrack].notes[x].name,
+                    length:song.tracks[copyTrack].notes[x].length}
+      song.tracks[currentInstrument].notes.splice(Number(currentNote)+1,0,copyNote);
+      if(song.tracks[currentInstrument].notes.length != 1 ){
+        currentNote++;
+      } else {
+        currentNote = 0;
+      }
+    }
+  }
+}

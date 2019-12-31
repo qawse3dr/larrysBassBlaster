@@ -473,3 +473,11 @@ ipcMain.on("repeat",(event)=>{
 ipcMain.on("getConfig",(event)=>{
   event.returnValue = config;
 })
+
+ipcMain.on("copy",(event) =>{
+  win.webContents.send("copy");
+})
+
+ipcMain.on("paste",(event) =>{
+  win.webContents.send("paste");
+})

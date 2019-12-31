@@ -87,6 +87,10 @@ electron.remote.getCurrentWindow().webContents.on('before-input-event', (event, 
         electron.ipcRenderer.send("dot");
      } else if(shortcutHandler(input, config.shortcuts.del) || shortcutHandler(input,config.shortcuts.del2)){
        electron.ipcRenderer.send("del-note")
+     } else if(shortcutHandler(input, config.shortcuts.copy)){
+       electron.ipcRenderer.send("copy")
+     } else if(shortcutHandler(input, config.shortcuts.paste)){
+       electron.ipcRenderer.send("paste")
      } else if(shortcutHandler(input, config.shortcuts.repeatLastNote)){
        electron.ipcRenderer.send("repeat")
      } else if(shortcutHandler(input, config.shortcuts.sharp)){
@@ -99,7 +103,7 @@ electron.remote.getCurrentWindow().webContents.on('before-input-event', (event, 
 
      }
     }
-    
+
   }
 })
 
