@@ -11,7 +11,16 @@ button{
 
 }
 
-
+.col1{
+  width:32px;
+  position: absolute;
+  margin-left: 1%;
+}
+.col2{
+  width:32px;
+  position: absolute;
+  margin-left: 50%;
+}
 .noImage{
   background-image:none;
   font-size: 16pt;

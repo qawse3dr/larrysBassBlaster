@@ -279,7 +279,7 @@ function preferences(){
     }
   })
 
-  //BPMWin.webContents.openDevTools();
+  preWin.webContents.openDevTools();
   preWin.setMenuBarVisibility(false);
   //preWin.setResizable(false);
 

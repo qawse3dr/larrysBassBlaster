@@ -1,34 +1,39 @@
 body{
-
   background-color: #3b3e42;
   color:white;
-
 }
 
 .text{
   color:white;
 }
 
+
+/*For the title of the song*/
 .title{
   position: fixed;
   color:white;
   margin-left:30%;
   width:300px;
   text-align:center;
-
   height:auto;
   margin-bottom: 5%
 
 }
+
+/*Dropdown menu*/
 select{
   margin-left: 80%;
   width:100px;
 }
+
+
 canvas {
     position: relative;
     display: block;
 
 }
+
+/*canvas container which allows for scrolling*/
 .song{
     background-color: black;
     overflow-y:scroll;
@@ -67,4 +72,9 @@ s1{
 .buttons{
   text-align: center;
 
+}
+
+/*for preferences page*/
+.tabButtons:clicked{
+  background-color:#231C2C;
 }

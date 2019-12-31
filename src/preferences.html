@@ -3,9 +3,73 @@
   <head>
     <meta charset="utf-8">
     <title>Preferences</title>
+    <link id="style" rel="stylesheet" href="../res/css/styles.css">
+    <link  rel="stylesheet" href="../res/css/preferences.css">
   </head>
   <body>
-      WORK IN PROGRESS
+    <div class="tabButtons">
 
+
+      <button type="button" name="button">General</button>
+      <button type="button" name="button">Shortcuts</button>
+      <button type="button" name="button">Style</button>
+    </div>
+
+    <div class="general">
+      <select id="autoSave" class="autoSave">
+            <option value:"-1">off</option>
+            <option value="1">1 minute</option>
+            <option value="3">3 minutes</option>
+            <option value="5">5 minutes</option>
+            <option value="10">10 minutes</option>
+            <option value="15">15 minutes</option>
+            <option value="30">30 minutes</option>
+      </select>
+      <p id="autoSaveText">Auto Saving</p>
+      <select id="saveOnExit" class="saveOnExit">
+            <option value:"false">off</option>
+            <option value="true">on</option>
+      </select>
+      <p id="saveOnExitText">Save On Exit</p>
+    </div>
+    <div class="shortcut">
+      <div class="shortcutNames">
+        <p>Play</p>
+        <p>Open BPM Window</p>
+        <p>Solo</p>
+        <p>Metronome</p>
+        <p>Count in</p>
+        <p>Shift To Left Note</p>
+        <p>Shift To Right Note</p>
+        <p>Shift Note Up</p>
+        <p>Shift Note Down</p>
+        <p>Dot A note</p>
+        <p>Delete A note</p>
+        <p>Copy and paste last note</p>
+        <p>Copy</p>
+        <p>Paste</p>
+        <p>Add Flat</p>
+        <p>Add Sharp</p>
+        <p>Undo</p>
+        <p>Redo</p>
+      </div class="shortcutNames">
+      <div class="shortcutButtons">
+        <button type="button" id="shortcutButton">word</button>
+        <button type="button" id="shortcutButton">word</button>
+        <button type="button" id="shortcutButton">word</button>
+        <button type="button" id="shortcutButton">word</button>
+        <button type="button" id="shortcutButton">word</button>
+        <button type="button" id="shortcutButton">word</button>
+        <button type="button" id="shortcutButton">word</button>
+        <button type="button" id="shortcutButton">word</button>
+        <button type="button" id="shortcutButton">word</button>
+        <button type="button" id="shortcutButton">word</button>
+        <button type="button" id="shortcutButton">word</button>
+        <button type="button" id="shortcutButton">word</button>
+        <button type="button" id="shortcutButton">word</button>
+        <button type="button" id="shortcutButton">word</button>
+        <button type="button" id="shortcutButton">word</button>
+      </div class="shortcutButtons">
+    </div>
   </body>
 </html>
