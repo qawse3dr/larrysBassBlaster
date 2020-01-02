@@ -34,7 +34,7 @@ trackDropdown.addEventListener("change",changeTrack)
 each operation has a name and data
 data for each operation is unique*/
 var operation = []
-var operationIndex = 0; //allows for undoing and redoing operations
+var operationIndex = -1; //allows for undoing and redoing operations
 var ignoreOperation = false;
 var config = ipcRenderer.sendSync("getConfig");
 var isDarkMode = config.darkMode;
@@ -412,38 +412,10 @@ function drawNote(note,pos,noteIndex){
   for(let i = 0;i < note.name.length;i++){
     let noteLetter = note.name[i];
     if(i == 0){
-      switch(noteLetter){
-        case "A":
-          noteOffset = -35;
-          break;
-        case "B":
-          noteOffset = -40;
-          break;
-        case "C":
-          noteOffset = -10;
-          break;
-        case "D":
-          noteOffset = -15;
-          break;
-        case "E":
-          noteOffset = -20;
-          break;
-        case "F":
-          noteOffset = -25;
-          break;
-        case "G":
-          noteOffset = -30;
-          break;
-      }
+      noteOffset = getNoteLetterOffset(noteLetter);
     } else if([0,1,2,3,4,5,6,7].includes(Number(noteLetter))){
 
-      let offsets = [140,105,70,35,0,-35,-70]
-
-      noteOffset += offsets[Number(noteLetter)];
-      if(song.tracks[currentInstrument].clef == "Bass"){
-        noteOffset -= 25
-        //bass is an octave down plus shift
-      }
+      noteOffset += getOctaveOffset(noteLetter);
 
 
     }
@@ -551,6 +523,46 @@ function drawSymbol(symbol, pos,noteShift){
   ctx.fillText(symbol,pos.xOffset-5,pos.yOffset+noteShift+25);
 }
 
+/**returns the offset needed for given note*/
+function getNoteLetterOffset(noteLetter){
+  let noteOffset;
+  switch(noteLetter){
+    case "A":
+      noteOffset = -35;
+      break;
+    case "B":
+      noteOffset = -40;
+      break;
+    case "C":
+      noteOffset = -10;
+      break;
+    case "D":
+      noteOffset = -15;
+      break;
+    case "E":
+      noteOffset = -20;
+      break;
+    case "F":
+      noteOffset = -25;
+      break;
+    case "G":
+      noteOffset = -30;
+      break;
+  }
+  return noteOffset;
+}
+
+/**gets the offset for the octave*/
+function getOctaveOffset(noteLetter){
+  let offsets = [140,105,70,35,0,-35,-70]
+
+  noteOffset = offsets[Number(noteLetter)];
+  if(song.tracks[currentInstrument].clef == "Bass"){
+    noteOffset -= 25
+    //bass is an octave down plus shift
+  }
+  return noteOffset
+}
 /*********************GRAPHICS************************/
 //plays the song when play is clicked or stops it if its already playing
 function play(event){ //plays the song or stops it.
@@ -649,6 +661,7 @@ function playSong(){
       if(currentNote == song.tracks[currentInstrument].notes.length){
         stopPlay();
         currentNote = -1;
+        canvas.parentElement.scrollTop = 0;
       }
 
 
@@ -828,18 +841,17 @@ electron.remote.getCurrentWindow().on("close", () => {
 function pushOperation(obj){
 
   //overwrites all data ontop of the  index of the stack.
-  console.log(operationIndex)
+  console.log(obj)
   if(!ignoreOperation){
-    operation.length = operationIndex +1;
-    operation.push(obj); //pushes obj onto the stack
     operationIndex++;
+    operation.push(obj); //pushes obj onto the stack
+    operation.length = operationIndex;
   }
 }
 
 //gets the item at the stack and lowers the stack but does not delete it
 function popOperation(){
-  console.log("length " + operation.length);
-  if(operation.length == 0 || operationIndex <= 0 ){
+  if(operation.length == 0 || operationIndex < 0 ){
     return null;
   }
   operationIndex--; //goes down an index
@@ -851,9 +863,7 @@ function pullOperation(){
   if(operation.length < operationIndex+1 || operation.length == 0){
     return null;
   }
-
   operationIndex++
-  console.log(operation)
   return operation[operationIndex-1];
 }
 
@@ -864,7 +874,6 @@ function undo(event){
   } while(typeof op == "undefined");
 
   ignoreOperation = true;
-  console.log(op)
   if(op != null){ //no operation to undo
       switch(op.name){
         case "bpm": //undo bpm change
@@ -930,10 +939,11 @@ function undo(event){
 
 /*undos last operation*/
 function redo(event){
-  op = pullOperation()
-
+  do{
+    op = pullOperation()
+  } while(typeof op == "undefined");
   ignoreOperation = true;
-  console.log(op)
+
   if(op != null){ //no operation to undo
       switch(op.name){
         case "bpm": //undo bpm change
@@ -955,22 +965,20 @@ function redo(event){
           } else { //makes sure it selects first note
             currentNote = 0;
           }
-          operation.length--;
+
           break;
         case "flat":
           currentNote = op.data.index;
           flat(null);
-          operation.length--;
+
           break;
         case "sharp":
           currentNote = op.data.index;
           sharp(null);
-          operation.length--;
           break;
         case "dot":
           currentNote = op.data.index;
           dot(null);
-          operation.length--;
           break;
         case "delete-track":
           song.tracks.splice(op.data.index,1);
@@ -987,12 +995,10 @@ function redo(event){
         case "noteUp":
           currentNote =op.data.index
           moveUp(null);
-          operation.length-=1;
           break;
         case "noteDown":
           currentNote =op.data.index
           moveDown(null);
-          operation.length-=1;
           break;
         case "paste-one":
           break;
@@ -1309,6 +1315,8 @@ ipcRenderer.on("move-left", (event) => {
 
 ipcRenderer.on("copy",copy);
 ipcRenderer.on("paste",paste);
+ipcRenderer.on("undo",undo);
+ipcRenderer.on("redo",redo);
 /********************IPC COMMUNICATIONS*************************/
 
 

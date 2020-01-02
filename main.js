@@ -66,7 +66,7 @@ function createWindow () {
     }
   })
   //win.setResizable(false);
-  win.webContents.openDevTools();
+  //win.webContents.openDevTools();
   // and load the index.html of the app.
   win.loadFile('src/index.html')
   win.on("close", () => {
@@ -212,13 +212,13 @@ function load(){
 
 /*undos last command if it can.*/
 function undo(){
-
+  win.webContents.send("undo");
 }
 
 /*redoes last command if it can.*/
 function redo(){
 
-
+  win.webContents.send("redo")
 }
 
 /*Opens save bpm window*/
@@ -307,7 +307,7 @@ function editingTools(){
   // Create the browser window.
 
   toolsWin = new BrowserWindow({
-    width: 100,
+    width: 150,
     height: 310,
     x:400,
     y:400,
@@ -480,4 +480,12 @@ ipcMain.on("copy",(event) =>{
 
 ipcMain.on("paste",(event) =>{
   win.webContents.send("paste");
+})
+
+ipcMain.on("undo",(event) =>{
+  win.webContents.send("undo");
+})
+
+ipcMain.on("redo",(event) =>{
+  win.webContents.send("redo");
 })

@@ -98,9 +98,9 @@ electron.remote.getCurrentWindow().webContents.on('before-input-event', (event, 
      } else if(shortcutHandler(input, config.shortcuts.flat)){
        electron.ipcRenderer.send("flat");
      } else if(shortcutHandler(input, config.shortcuts.undo)){
-
+       electron.ipcRenderer.send("undo");
      } else if(shortcutHandler(input, config.shortcuts.redo)){
-
+       electron.ipcRenderer.send("redo");
      }
     }
 
