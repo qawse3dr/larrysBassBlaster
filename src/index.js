@@ -227,7 +227,7 @@ function drawMusic(){
     if(pos.barCounter == 1){ //note that ends the bar
       pos.barCounter = 0;
       drawBar(pos);
-      drawNote(song.tracks[currentInstrument].notes[notes],pos,notes);
+      drawNote(song.tracks[currentInstrument].notes[notes],pos,notes,false);
     } else if(pos.barCounter > 1){ //note needs to be tied
 
       let leftOver = 1/(pos.barCounter-1);
@@ -235,6 +235,7 @@ function drawMusic(){
       drawBar(pos);
       let lengthDotted = 1/(1/(Number(tempNote.length.replace("n","").replace(".","")))*1.5-1/leftOver)+"n";
       let lengthNotDotted = 1/(1/(Number(tempNote.length.replace("n","").replace(".","")))-1/leftOver)+"n";
+            pos.barCounter = 0;
       if(tempNote.length.includes(".")){
 
         if(lengthDotted.includes(".")){ //draws normal note dont know how to deal with given notes
@@ -255,7 +256,7 @@ function drawMusic(){
               drawTiedNotes(notes,"16n.",leftOver+"n",pos);
               break;
             default:
-              drawNote(song.tracks[currentInstrument].notes[notes],pos,notes);
+              drawNote(song.tracks[currentInstrument].notes[notes],pos,notes,false);
               break;
           }
 
@@ -277,7 +278,7 @@ function drawMusic(){
               drawTiedNotes(notes,lengthDotted,"16n.",pos);
               break;
             default:
-              drawNote(song.tracks[currentInstrument].notes[notes],pos,notes);
+              drawNote(song.tracks[currentInstrument].notes[notes],pos,notes,false);
               break;
           }
         } else {
@@ -303,7 +304,7 @@ function drawMusic(){
               drawTiedNotes(notes,"16n.",leftOver+"n",pos);
               break;
             default:
-              drawNote(song.tracks[currentInstrument].notes[notes],pos,notes);
+              drawNote(song.tracks[currentInstrument].notes[notes],pos,notes.false);
               break;
           }
 
@@ -325,7 +326,7 @@ function drawMusic(){
               drawTiedNotes(notes,lengthNotDotted,"16n.",pos);
               break;
             default:
-              drawNote(song.tracks[currentInstrument].notes[notes],pos,notes);
+              drawNote(song.tracks[currentInstrument].notes[notes],pos,notes,false);
               break;
           }
         } else {
@@ -333,7 +334,7 @@ function drawMusic(){
         }
       }
     } else { //normal note
-      drawNote(song.tracks[currentInstrument].notes[notes],pos,notes);
+      drawNote(song.tracks[currentInstrument].notes[notes],pos,notes,false);
     }
 
 
@@ -360,12 +361,12 @@ function drawMusic(){
 function drawTiedNotes(notes,length1,length2,pos){
   let tempNote = song.tracks[currentInstrument].notes[notes];
 
-  let noteOffset = drawNote({name:tempNote.name,length:length1},pos,notes) //draws first note in tie
+  let noteOffset = drawNote({name:tempNote.name,length:length1},pos,notes,true) //draws first note in tie
   drawTie(pos,noteOffset) //draws the tie
 
   //adds spacing for new note
   pos.xOffset += pos.noteSpacing
-  drawNote({name:tempNote.name,length:length2},pos,notes) //draws second note in tie
+  drawNote({name:tempNote.name,length:length2},pos,notes,true) //draws second note in tie
 
   pos.barCounter = 1/length2.replace(".","").replace("n","");
 }
@@ -403,7 +404,7 @@ function drawStaff(pos){
 }
 
 /**Draws note given by index note in song in the current track.*/
-function drawNote(note,pos,noteIndex){
+function drawNote(note,pos,noteIndex,tiedNote){
   let noteInfo = {noteOffset:0, //how much to shift the y offset for the note.
                   noteType:0, //the shift in the spriteSheet needed for note type.
                   isDotted:false, //if the note is dotted
@@ -438,7 +439,7 @@ function drawNote(note,pos,noteIndex){
   }
 
   //draws a bar for eigthNotes
-  if(typeof nextNote != "undefined" && noteInfo.noteType == Notes.eigthNote && note.isRest != 1 && Number(noteIndex)%2 == 0 && nextNoteInfo.noteType == Notes.eigthNote && !getIsRest(nextNote,nextNoteInfo)){
+  if(tiedNote == false && typeof nextNote != "undefined" && noteInfo.noteType == Notes.eigthNote && note.isRest != 1 && Number(noteIndex)%2 == 0 && nextNoteInfo.noteType == Notes.eigthNote && !getIsRest(nextNote,nextNoteInfo)){
     ctx.drawImage(spriteSheet,Notes.quarterNote,32*noteInfo.isRest,32,32,pos.xOffset+1,pos.yOffset + 1+ noteInfo.noteOffset,32,32);
     getOffset(nextNote,nextNoteInfo)
     getUpsideDown(nextNoteInfo)
@@ -449,7 +450,7 @@ function drawNote(note,pos,noteIndex){
 
     }
     drawBeam(pos,noteInfo.noteOffset,nextNoteInfo.noteOffset,noteInfo.isUpsideDown)
-  } else if(typeof prevNote != "undefined" && noteInfo.noteType == Notes.eigthNote && note.isRest != 1 && Number(noteIndex)%2 == 1 && prevNoteInfo.noteType == Notes.eigthNote && !getIsRest(prevNote,prevNoteInfo)){
+  } else if(tiedNote == false &&  typeof prevNote != "undefined" && noteInfo.noteType == Notes.eigthNote && note.isRest != 1 && Number(noteIndex)%2 == 1 && prevNoteInfo.noteType == Notes.eigthNote && !getIsRest(prevNote,prevNoteInfo)){
     getOffset(prevNote,prevNoteInfo)
     getUpsideDown(prevNoteInfo)
     if(!prevNoteInfo.isUpsideDown && noteInfo.isUpsideDown){
@@ -467,7 +468,7 @@ function drawNote(note,pos,noteIndex){
 
   checkIfClicked(pos,noteIndex)
 
-  return noteOffset
+  return noteInfo.noteOffset
 }
 
 /**checks if its upsideDown*/
