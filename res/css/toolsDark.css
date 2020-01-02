@@ -14,10 +14,12 @@ button{
 .col1{
   width:32px;
   position: absolute;
-  margin-left: 1%;
+  left:0px;
+  margin-left: 0%
 }
 .col2{
   width:32px;
+  left:0px;
   position: absolute;
   margin-left: 50%;
 }

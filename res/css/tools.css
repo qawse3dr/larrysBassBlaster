@@ -12,12 +12,14 @@ button{
 }
 
 .col1{
-  width:32;
+  width:32px;
   position: absolute;
   margin-left: 0%;
+  left:0px;
 }
 .col2{
-  width:32;
+  width:32px;
+  left:0px;
   position: absolute;
   margin-left: 50%;
 }

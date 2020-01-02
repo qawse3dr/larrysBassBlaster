@@ -404,73 +404,134 @@ function drawStaff(pos){
 
 /**Draws note given by index note in song in the current track.*/
 function drawNote(note,pos,noteIndex){
-  let noteOffset = 0; //how much to shift the y offset for the note.
-  let noteType = 0;  //the shift in the spriteSheet needed for note type.
-  let isDotted = false;
-  let isRest = 0; //if its a rest it will be shifted 32 pixels down in the sprite sheet
+  let noteInfo = {noteOffset:0, //how much to shift the y offset for the note.
+                  noteType:0, //the shift in the spriteSheet needed for note type.
+                  isDotted:false, //if the note is dotted
+                  isRest:0, //if its a rest it will be shifted 32 pixels down in the sprite sheet
+                  isUpsideDown:false} //if the note is filled or not
   //gets note offsets
-  for(let i = 0;i < note.name.length;i++){
-    let noteLetter = note.name[i];
-    if(i == 0){
-      noteOffset = getNoteLetterOffset(noteLetter);
-    } else if([0,1,2,3,4,5,6,7].includes(Number(noteLetter))){
+  getOffset(note,noteInfo);
 
-      noteOffset += getOctaveOffset(noteLetter);
+  getIsRest(note,noteInfo)
 
+  if(note.name.includes("#")){
+    drawSymbol("#", pos,noteInfo.noteOffset)
+  } else if(note.name.includes("b")){
+    drawSymbol("b", pos, noteInfo.noteOffset)
+  }
+
+  getNoteType(note,noteInfo)
+  drawExtraNotion(noteInfo,pos)
+
+  getUpsideDown(noteInfo)
+
+  let nextNoteInfo = {noteType:0,isDotted:0,noteOffset:0}
+  let nextNote = song.tracks[currentInstrument].notes[Number(noteIndex)+1];
+  if(typeof nextNote != "undefined"){
+      getNoteType(nextNote,nextNoteInfo);
+  }
+
+  let prevNoteInfo = {noteType:0,isDotted:0,noteOffset:0,isUpsideDown:false,isRest:0}
+  let prevNote = song.tracks[currentInstrument].notes[Number(noteIndex)-1];
+  if(typeof prevNote != "undefined"){
+      getNoteType(prevNote,prevNoteInfo);
+  }
+
+  //draws a bar for eigthNotes
+  if(typeof nextNote != "undefined" && noteInfo.noteType == Notes.eigthNote && note.isRest != 1 && Number(noteIndex)%2 == 0 && nextNoteInfo.noteType == Notes.eigthNote && !getIsRest(nextNote,nextNoteInfo)){
+    ctx.drawImage(spriteSheet,Notes.quarterNote,32*noteInfo.isRest,32,32,pos.xOffset+1,pos.yOffset + 1+ noteInfo.noteOffset,32,32);
+    getOffset(nextNote,nextNoteInfo)
+    getUpsideDown(nextNoteInfo)
+    if(!nextNoteInfo.isUpsideDown && noteInfo.isUpsideDown){
+      nextNoteInfo.noteOffset += 18
+    } else if(nextNoteInfo.isUpsideDown && !noteInfo.isUpsideDown){
+      nextNoteInfo.noteOffset -= 18
 
     }
+    drawBeam(pos,noteInfo.noteOffset,nextNoteInfo.noteOffset,noteInfo.isUpsideDown)
+  } else if(typeof prevNote != "undefined" && noteInfo.noteType == Notes.eigthNote && note.isRest != 1 && Number(noteIndex)%2 == 1 && prevNoteInfo.noteType == Notes.eigthNote && !getIsRest(prevNote,prevNoteInfo)){
+    getOffset(prevNote,prevNoteInfo)
+    getUpsideDown(prevNoteInfo)
+    if(!prevNoteInfo.isUpsideDown && noteInfo.isUpsideDown){
+      noteInfo.isRest= 0
+      noteInfo.noteOffset -= 18
+    } else if(prevNoteInfo.isUpsideDown && !noteInfo.isUpsideDown){
+      noteInfo.isRest= 2
+            noteInfo.noteOffset += 18
 
+    }
+    ctx.drawImage(spriteSheet,Notes.quarterNote,32*noteInfo.isRest,32,32,pos.xOffset+1,pos.yOffset + 1+ noteInfo.noteOffset,32,32);
+  }else {
+      ctx.drawImage(spriteSheet,noteInfo.noteType,32*noteInfo.isRest,32,32,pos.xOffset+1,pos.yOffset + 1+ noteInfo.noteOffset,32,32);
   }
+
+  checkIfClicked(pos,noteIndex)
+
+  return noteOffset
+}
+
+/**checks if its upsideDown*/
+function getUpsideDown(noteInfo){
+  if(noteInfo.noteOffset <= -5 && noteInfo.isRest != 1){ //flips notes if above middle line
+    noteInfo.isRest= 2
+    noteInfo.noteOffset += 18
+    noteInfo.isUpsideDown = true
+  }
+}
+/**checks if its a rest or note*/
+function getIsRest(note,noteInfo){
   if(note.name == "r"){
-    isRest = 1;
-    noteOffset = 5;
-  } else if(note.name.includes("#")){
-    drawSymbol("#", pos,noteOffset)
-  } else if(note.name.includes("b")){
-    drawSymbol("b", pos, noteOffset)
-  }
-
+    noteInfo.isRest = 1;
+    noteInfo.noteOffset = 5;
+    return true
+  } else return false
+}
+/**gets the note type of given note*/
+function getNoteType(note,noteInfo){
   //gets note type
   switch(note.length){
     case "1n":
-      noteType = Notes.wholeNote;
+      noteInfo.noteType = Notes.wholeNote;
       break;
     case "1n.":
-      noteType = Notes.wholeNote;
-      isDotted = true;
+      noteInfo.noteType = Notes.wholeNote;
+      noteInfo.isDotted = true;
       break;
     case "2n":
-      noteType = Notes.halfNote;
+      noteInfo.noteType = Notes.halfNote;
       break;
     case "2n.":
-      noteType = Notes.halfNote;
-      isDotted=true;
+      noteInfo.noteType = Notes.halfNote;
+      noteInfo.isDotted=true;
       break;
     case "4n":
-      noteType = Notes.quarterNote;
+      noteInfo.noteType = Notes.quarterNote;
       break;
     case "4n.":
-      noteType = Notes.quarterNote;
-      isDotted = true;
+      noteInfo.noteType = Notes.quarterNote;
+      noteInfo.isDotted = true;
       break;
     case "8n":
-      noteType = Notes.eigthNote;
+      noteInfo.noteType = Notes.eigthNote;
       break;
     case "8n.":
-      noteType = Notes.eigthNote;
-      isDotted = true;
+      noteInfo.noteType = Notes.eigthNote;
+      noteInfo.isDotted = true;
       break;
     case "16n":
-      noteType = Notes.sixteenthNote;
+      noteInfo.noteType = Notes.sixteenthNote;
       break;
     case "16n.":
-      noteType = Notes.sixteenthNote;
-      isDotted = true;
+      noteInfo.noteType = Notes.sixteenthNote;
+      noteInfo.isDotted = true;
       break;
   }
+}
+/**draws the extra notation for the note*/
+function drawExtraNotion(noteInfo,pos){
   //draw lines for note if its off the staff
-  if(noteOffset < -5){
-    for(let lines = -10; lines >= noteOffset+25; lines -= 10){
+  if(noteInfo.noteOffset < -5){
+    for(let lines = -10; lines >= noteInfo.noteOffset+25; lines -= 10){
       ctx.beginPath();
       ctx.moveTo(pos.xOffset,pos.yOffset+lines);
       ctx.lineTo(pos.xOffset+25,pos.yOffset+lines);
@@ -478,7 +539,7 @@ function drawNote(note,pos,noteIndex){
       ctx.closePath();
     }
   }
-  else if(noteOffset > 20){
+  else if(noteInfo.noteOffset > 20){
     for(let lines = 40; lines <= noteOffset+30; lines += 10){
       ctx.beginPath();
       ctx.moveTo(pos.xOffset-5,pos.yOffset+lines);
@@ -486,33 +547,24 @@ function drawNote(note,pos,noteIndex){
       ctx.stroke();
       ctx.closePath();
     }
-
   }
-
-  if(isDotted){//if the note is dotted draws the dot
+  if(noteInfo.isDotted){//if the note is dotted draws the dot
     ctx.beginPath();
-    ctx.arc(pos.xOffset+25, pos.yOffset+25 + noteOffset, 3, 0, 2 * Math.PI);
+    ctx.arc(pos.xOffset+25, pos.yOffset+25 + noteInfo.noteOffset, 3, 0, 2 * Math.PI);
     ctx.fill();
     ctx.closePath();
   }
-
-  if(noteOffset <= -5 && isRest != 1){ //flips notes if above middle line
-    isRest= 2
-    noteOffset += 18
-  }
-  ctx.drawImage(spriteSheet,noteType,32*isRest,32,32,pos.xOffset+1,pos.yOffset + 1+ noteOffset,32,32);
-
-  /**checks if it was clicked on*/
+}
+/**checks if the current note is clicked*/
+/**checks if it was clicked on*/
+function checkIfClicked(pos,note){
   if(isClicked){
     if((pos.xOffset-10 <= mouseX && mouseX <= pos.xOffset+32) &&
        (pos.yOffset-32 <= mouseY && mouseY <= pos.yOffset+64)){
-
-        currentNote = noteIndex
-
+        currentNote = note
          isClicked = false;
         }
   }
-  return noteOffset
 }
 
 /**draws the symbol symbol beside the note to the left*/
@@ -523,6 +575,31 @@ function drawSymbol(symbol, pos,noteShift){
   ctx.fillText(symbol,pos.xOffset-5,pos.yOffset+noteShift+25);
 }
 
+/*draws a beam from note 1 to the other*/
+function drawBeam(pos,noteOffset1,noteOffset2,isUpsideDown){
+  ctx.beginPath();
+  ctx.lineWidth = 3;
+  ctx.moveTo(pos.xOffset+5,pos.yOffset+noteOffset1+isUpsideDown*30);
+  ctx.lineTo(pos.xOffset+13+pos.noteSpacing,pos.yOffset+noteOffset2+isUpsideDown*30)
+  ctx.stroke()
+  ctx.lineWidth = 1;
+
+  ctx.closePath();
+}
+
+/*gets the notes offset*/
+function getOffset(note,noteInfo){
+
+  for(let i = 0;i < note.name.length;i++){
+    let noteLetter = note.name[i];
+    if(i == 0){
+      noteInfo.noteOffset = getNoteLetterOffset(noteLetter);
+    } else if([0,1,2,3,4,5,6,7].includes(Number(noteLetter))){
+
+      noteInfo.noteOffset += getOctaveOffset(noteLetter);
+    }
+  }
+}
 /**returns the offset needed for given note*/
 function getNoteLetterOffset(noteLetter){
   let noteOffset;
