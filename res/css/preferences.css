@@ -1,5 +1,8 @@
 
-
+body{
+    overflow-x: hidden;
+    overflow-y:hidden;
+}
 .tabButtons{
   position: absolute;
   margin-left:0%;
@@ -9,9 +12,16 @@
   left:0px;
 
 }
-
-button{
-  background-color: transparent;
+p{
+  text-align: center;
+  height:10%;
+  max-height: 10%;
+  width:95%;
+  margin:0px;
+  padding:0px;
+}
+.tab{
+    background-color: transparent;
     height:20%;
     width:100%;
     border-radius: 0px;
@@ -19,34 +29,38 @@ button{
     margin:0px;
     left:0px;
 }
-button:hover{
-  background-color:gray;
-}
 
 /**GENERAL styling*/
 .general{
   position: absolute;
-  visibility: hidden;
+  visibility: visible;
+  margin-left: 30%;
+  width: 70%;
+  height:100%;
+    text-align: left;
 }
+
 
 #autoSaveText{
     position: absolute;
-    margin-left: 65%;
+    margin-left: 35%;
     margin-top:10%;
+      width:30%;
 }
 #autoSave{
   position: absolute;
-  margin-left: 40%;
-  width:20%;
+  margin-left: 15%;
+  width:22%;
   right:0px;
+
   left:0px;
   margin-top:10%;
 }
 
 .saveOnExit{
   position: absolute;
-  margin-left: 40%;
-  width:20%;
+  margin-left: 15%;
+  width:22%;
   right:0px;
   left:0px;
   margin-top:30%;
@@ -54,12 +68,14 @@ button:hover{
 
 #saveOnExitText{
   position: absolute;
-  margin-left: 65%;
+  margin-left: 35%;
   margin-top:30%;
+  width:30%;
 }
 
 /**shortcut styling*/
 .shortcut{
+  visibility: hidden;
   position:absolute;
   margin-top:0%;
   margin-left:30%;
@@ -71,32 +87,64 @@ button:hover{
 
 }
 .shortcutNames{
+  margin-top:5%;
   position:absolute;
-  margin-left:0%;
+  margin:0%;
   height:100%;
-  bottom:0px;
-  width:70%;
-  top:0px;
+  width:50%;
   max-height: 100%;
   float: left;
 }
 
 .shortcutButtons{
-  top:0px;
+    margin-top:5%;
   height:100%;
+  margin-left:50%;
   position:absolute;
-  width:30%;
+  width:48%;
+  margin-top:0px;
   max-height: 100%
   float:right;
 
+
+
 }
-#shortcutButton{
+.shortcutButton{
   width:100%;
-  height: 20%;
+  /**note quite sure why its note lining up but this number fixes it*/
+  height: 10%;
+  max-height: 10%;
 
+  margin:0px;
+  padding: 0px;
+  border-style: solid;
+  border-width: medium;
 
 }
-p{
-  height:20%;
-  width:100%
+
+
+button.tab:{
+  border-style: solid;
+  border-width: medium;
+
+}
+
+/**STYLE  tab*/
+.style{
+  position: absolute;
+  visibility: hidden;
+  margin-left: 30%;
+  width:70%;
+}
+.selectedStyle{
+  position: absolute;
+  margin-left: 20%;
+  margin-top: 20%;
+  width:22%;
+}
+#styleText{
+  position: absolute;
+  margin-left: 45%;
+  margin-top: 20%;
+  width:22%;
 }

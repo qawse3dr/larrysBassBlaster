@@ -70,3 +70,11 @@ button{
 .tabButtons{
   background-color:#606060;
 }
+
+button.tab:hover{
+  background-color:#707070;
+}
+
+button.tab:{
+  border-color: white;
+}

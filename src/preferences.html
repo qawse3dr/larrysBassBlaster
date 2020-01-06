@@ -10,14 +10,19 @@
     <div class="tabButtons">
 
 
-      <button type="button" name="button">General</button>
-      <button type="button" name="button">Shortcuts</button>
-      <button type="button" name="button">Style</button>
+      <button type="button" name="button" class="tab" onclick="general()">General</button>
+      <button type="button" name="button" class="tab" onclick="shortcuts()">Shortcuts</button>
+      <button type="button" name="button" class="tab" onclick="styleOnclick()">Style</button>
     </div>
 
-    <div class="general">
+    <div class="general" id="general">
+      <header>
+        General
+      </header>
+
+
       <select id="autoSave" class="autoSave">
-            <option value:"-1">off</option>
+            <option value="0">off</option>
             <option value="1">1 minute</option>
             <option value="3">3 minutes</option>
             <option value="5">5 minutes</option>
@@ -25,14 +30,20 @@
             <option value="15">15 minutes</option>
             <option value="30">30 minutes</option>
       </select>
-      <p id="autoSaveText">Auto Saving</p>
+
+      <p id="autoSaveText" class="generalText">Auto Saving</p>
       <select id="saveOnExit" class="saveOnExit">
-            <option value:"false">off</option>
+            <option value="false">off</option>
             <option value="true">on</option>
       </select>
-      <p id="saveOnExitText">Save On Exit</p>
+      <p id="saveOnExitText" class="generalText">Save On Exit</p>
+
     </div>
-    <div class="shortcut">
+
+    <div class="shortcut" id="shortcut">
+      <header>
+        Shortcuts
+      </header>
       <div class="shortcutNames">
         <p>Play</p>
         <p>Open BPM Window</p>
@@ -50,26 +61,37 @@
         <p>Paste</p>
         <p>Add Flat</p>
         <p>Add Sharp</p>
-        <p>Undo</p>
-        <p>Redo</p>
       </div class="shortcutNames">
       <div class="shortcutButtons">
-        <button type="button" id="shortcutButton">word</button>
-        <button type="button" id="shortcutButton">word</button>
-        <button type="button" id="shortcutButton">word</button>
-        <button type="button" id="shortcutButton">word</button>
-        <button type="button" id="shortcutButton">word</button>
-        <button type="button" id="shortcutButton">word</button>
-        <button type="button" id="shortcutButton">word</button>
-        <button type="button" id="shortcutButton">word</button>
-        <button type="button" id="shortcutButton">word</button>
-        <button type="button" id="shortcutButton">word</button>
-        <button type="button" id="shortcutButton">word</button>
-        <button type="button" id="shortcutButton">word</button>
-        <button type="button" id="shortcutButton">word</button>
-        <button type="button" id="shortcutButton">word</button>
-        <button type="button" id="shortcutButton">word</button>
+        <button type="button" class="shortcutButton" value="play" onclick="shortCutButton(this)">unset</button>
+        <button type="button" class="shortcutButton" value="bpmWindow" onclick="shortCutButton(this)">unset</button>
+        <button type="button" class="shortcutButton" value="solo" onclick="shortCutButton(this)">unset</button>
+        <button type="button" class="shortcutButton" value="metronome" onclick="shortCutButton(this)">unset</button>
+        <button type="button" class="shortcutButton" value="countIn" onclick="shortCutButton(this)">unset</button>
+        <button type="button" class="shortcutButton" value="shiftLeft" onclick="shortCutButton(this)">unset</button>
+        <button type="button" class="shortcutButton" value="shiftRight" onclick="shortCutButton(this)">unset</button>
+        <button type="button" class="shortcutButton" value="shiftUp" onclick="shortCutButton(this)">unset</button>
+        <button type="button" class="shortcutButton" value="shiftDown" onclick="shortCutButton(this)">unset</button>
+        <button type="button" class="shortcutButton" value="dot" onclick="shortCutButton(this)">unset</button>
+        <button type="button" class="shortcutButton" value="del" onclick="shortCutButton(this)">unset</button>
+        <button type="button" class="shortcutButton" value="repeat" onclick="shortCutButton(this)">unset</button>
+        <button type="button" class="shortcutButton" value="copy" onclick="shortCutButton(this)">unset</button>
+        <button type="button" class="shortcutButton" value="paste" onclick="shortCutButton(this)">unset</button>
+        <button type="button" class="shortcutButton" value="flat" onclick="shortCutButton(this)">unset</button>
+        <button type="button" class="shortcutButton" value="sharp" onclick="shortCutButton(this)">unset</button>
       </div class="shortcutButtons">
     </div>
+
+    <div class="style" id="styleId">
+      <header>
+        Style
+      </header>
+      <select id="selectedStyle" class="selectedStyle">
+            <option value="false">light</option>
+            <option value="true">dark</option>
+      </select>
+            <p id="styleText">Current Style</p>
+    </div>
+    <script src="preferences.js" charset="utf-8"></script>
   </body>
 </html>

@@ -8,7 +8,6 @@ const tone = require("tone");
 const fs = require("fs");
 
 //UI Elements
-
 //buttons
 const playBtn = document.getElementById("play-btn");
 const countBtn = document.getElementById("count-btn");
@@ -38,16 +37,18 @@ var operationIndex = -1; //allows for undoing and redoing operations
 var ignoreOperation = false;
 var config = ipcRenderer.sendSync("getConfig");
 var isDarkMode = config.darkMode;
-if(isDarkMode){
+if(isDarkMode == "true"){
+
   document.getElementById("style").setAttribute("href","../res/css/stylesDark.css")
 }
+var currentFile = "";
 //Setting up graphics
 var ctx = canvas.getContext("2d");
 var height = canvas.height; //length and width of canvas
 var width = canvas.width;
 //setting up spriteSheet containing music notes and symbols
 var spriteSheet = new Image;
-if(isDarkMode){
+if(isDarkMode == "true"){
   spriteSheet.src = "../res/images/musicNotesDark.png";
 }
 else{
@@ -74,6 +75,33 @@ var synth = null;
 createSynth();
 
 
+/*sets up a autoSaveinterval*/
+setupSaveOnExit();
+function setupSaveOnExit(){
+  if(config.saveOnExit){
+    electron.remote.getCurrentWindow().on("close",() => {
+      autoSave()
+    })
+  }
+}
+setupAutoSave()
+function setupAutoSave(){
+  if(config.autoSave != 0){
+    setInterval(autoSave,config.autoSave * 60 * 1000);
+    console.log(config.autoSave * 60 * 1000)
+
+  }
+}
+function autoSave(){
+  let fileName;
+  if(currentFile == ""){
+    fileName = "autoSave.json";
+  } else{
+    fileName = currentFile;
+  }
+  console.log("he");
+  saveFile(fileName)
+}
 /*song object will hold everything that the song needs.
 will also be the json object that is saved and loaded.
 this is an example song that will be loaded at startup.
@@ -119,7 +147,7 @@ operationIndex = 0;
 function render(){ //displays the song canvas.
 
   //Paints Screen\
-  if(isDarkMode){
+  if(isDarkMode == "true"){
     fillScreen("#031a40")
   }else{
 
@@ -159,7 +187,7 @@ function fillScreen(colour){
 /**Draws the BPM.*/
 function renderBPM(){
   ctx.font = "12px Arial";   //default font.
-  if(isDarkMode){
+  if(isDarkMode == "true"){
     ctx.fillStyle = "#808080"
   } else{
 
@@ -183,7 +211,7 @@ function drawMusic(){
 
   let screenHeight = 500; //the parents screenHeight
 
-  if(isDarkMode){
+  if(isDarkMode == "true"){
     ctx.fillStyle  = "#808080";
     ctx.strokeStyle = '#808080';
   } else{
@@ -712,6 +740,7 @@ function playSong(){
     }
     let delta = startOffset; //time passed
     for(let note = currentNote; note < song.tracks[track].notes.length;note++){ //adds song to queue
+      if(currentNote == -1) continue //add to make sure there isnt a false positive
       if(song.tracks[track].notes[note].name !== "r"){
         synth.triggerAttackRelease(song.tracks[track].notes[note].name,song.tracks[track].notes[note].length,delta,0.5);
         //console.log(song.tracks[track].notes[note]);
@@ -791,7 +820,7 @@ function shiftButtonColour(condition,btn){
   if(condition){
     btn.style.background="#4b81a6"
   } else {
-    if(isDarkMode){
+    if(isDarkMode == "true"){
       btn.style.background="#00008b"
     } else{
       btn.style.background="lavender";
@@ -810,6 +839,9 @@ function shiftButtonColour(condition,btn){
 /******************FILE IO************************/
 /*saves the current song to a song file using json*/
 function saveFile(fileName){
+  if(fileName == null && currentFile != ""){
+    fileName = currentFile;
+  }
   let data = JSON.stringify(song); //Turns objects into strings.
   fs.writeFile(fileName,data,(err) => {
     if(err){ //cretes error popup
@@ -824,6 +856,7 @@ function saveFile(fileName){
 parse it from a json file.
 */
 function loadFile(fileName){
+  currentFile = fileName;
   fs.readFile(fileName, (err,data) =>{
     if(err){
       //creates popup here
@@ -909,11 +942,6 @@ function loadTracks(){
 
 }
 
-electron.remote.getCurrentWindow().on("close", () => {
-  tone.Transport.stop();
-  synth.unsync();
-  synth.dispose()
-})
 
 /**Pushes a operation onto the stack;*/
 function pushOperation(obj){

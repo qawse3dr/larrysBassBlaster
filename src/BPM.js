@@ -14,7 +14,7 @@ submitBtn.addEventListener("click",submit);
 //configs
 var config = ipcRenderer.sendSync("getConfig");
 var isDarkMode = config.darkMode;
-if(isDarkMode){
+if(isDarkMode == "true"){
   document.getElementById("style").setAttribute("href","../res/css/stylesDark.css")
 }
 

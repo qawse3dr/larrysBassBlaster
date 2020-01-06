@@ -1,6 +1,7 @@
 body{
   background-color: #3b3e42;
   color:white;
+  border-color:grey;
 }
 
 .text{
@@ -59,12 +60,16 @@ select{
 }
 button{
   background-color:#00008b;
+
   border-radius: 12px;
   position:relative;
   margin-left: 5%;
   margin-top: 2%;
   width: 100px;
   color:#808080;
+}
+p{
+    border-color: gray;
 }
 s1{
   color:white;
@@ -75,6 +80,17 @@ s1{
 }
 
 /*for preferences page*/
-.tabButtons:clicked{
+.tabButtons{
   background-color:#231C2C;
+
+
+}
+button.tab:hover{
+  background-color:#2A2235;
+}
+
+button.tab:{
+
+    border-radius: 12px;
+  color: grey;
 }

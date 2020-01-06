@@ -13,7 +13,12 @@ git clone https://github.com/qawse3dr/LarrysBassBlaster
 npm install
 npm start
 ```
-
+or for exe to be created
+```
+git clone https://github.com/qawse3dr/LarrysBassBlaster
+npm install
+npm run-script package
+```
 ## Contribution
 Author: qawse3dr
 feel free to ask for any features to be added just open an issue

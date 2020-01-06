@@ -48,19 +48,21 @@ config = {
     undo: {key:"KeyZ",Alt:false,Ctrl:true,shift:false,window:false},
     redo: {key:"KeyZ",Alt:false,Ctrl:true,shift:true,window:false},
   },
-  autoSave:false,
+  autoSave:null,
   saveOnExit:false,
 }
 
+
 function createWindow () {
 
-  loadFile(".config")
+  loadFile(__dirname + "/.config")
   // Create the browser window.
   win = new BrowserWindow({
     width: 800,
     height: 650,
     minHeight: 650,
     minWidth: 800,
+    icon:__dirname + "/Logo.png",
     webPreferences: {
       nodeIntegration: true
     }
@@ -228,6 +230,7 @@ function BPMWindow(){
     width: 250,
     height: 175,
     alwaysOnTop: false,
+    icon:__dirname + "/Logo.png",
     parent:win,
     webPreferences: {
       nodeIntegration: true,
@@ -251,6 +254,7 @@ function newTrack(){
     height: 200,
     alwaysOnTop: false,
     parent:win,
+    icon:__dirname + "/Logo.png",
     webPreferences: {
       nodeIntegration: true,
 
@@ -269,19 +273,20 @@ function newTrack(){
 function preferences(){
   // Create the browser window.
   preWin = new BrowserWindow({
-    width: 400,
+    width: 600,
     height: 400 ,
     alwaysOnTop: false,
     parent:win,
+    icon:__dirname + "/Logo.png",
     webPreferences: {
       nodeIntegration: true,
 
     }
   })
 
-  preWin.webContents.openDevTools();
+  //preWin.webContents.openDevTools();
   preWin.setMenuBarVisibility(false);
-  //preWin.setResizable(false);
+  preWin.setResizable(false);
 
   // and load the index.html of the app.
   preWin.loadFile('src/preferences.html')
@@ -312,6 +317,7 @@ function editingTools(){
     x:400,
     y:400,
     alwaysOnTop: true,
+    icon:__dirname + "/Logo.png",
     webPreferences: {
       nodeIntegration: true,
 
@@ -333,6 +339,7 @@ function titleWindow(){
     height: 160,
     parent:win,
     alwaysOnTop: false,
+    icon:__dirname + "/Logo.png",
     webPreferences: {
       nodeIntegration: true,
 
@@ -404,6 +411,12 @@ ipcMain.on("send-bpm-to-main", (event,bpm) => {
   //sends new bpm the main window
   win.webContents.send("send-bpm",bpm);
 
+})
+
+//when preferences are closed
+ipcMain.on("config", (event,newConfig) => {
+  config = newConfig;
+  saveFile(__dirname + "/.config");
 })
 
 //gets the title from titleWin and sends it to the mainWin

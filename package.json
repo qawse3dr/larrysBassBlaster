@@ -1,17 +1,19 @@
 {
   "name": "larrysbassblaster",
-  "version": "0.0.1",
-  "description": "Simple application to create and play back songs with sheet music in bass clef",
+  "version": "1.0.0",
+  "description": "Simple application to create and play back songs with sheet music",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "package": "sudo electron-packager . LarrysBassBlaster --overwrite --platform=all --arch=x64 --electron-version=5.0.13 --out=releases/ "
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/qawse3dr/LarrysBassBlaster.git"
   },
   "devDependencies": {
-    "electron": "^5.0.1"
+    "electron": "^5.0.1",
+    "electron-packager": "^14.1.1"
   },
   "keywords": [
     "electron",
@@ -20,7 +22,7 @@
     "learning"
   ],
   "author": "Lawrence Milne",
-  "license": "ISC",
+  "license": "GPL-3.0-only",
   "bugs": {
     "url": "https://github.com/qawse3dr/LarrysBassBlaster/issues"
   },
