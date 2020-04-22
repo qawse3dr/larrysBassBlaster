@@ -133,6 +133,7 @@ var isSolo = false; //if the instrument is soloing
 var currentInstrument = 0;
 var currentNote = -1;
 var currentTimeouts = [];
+
 //sets the rendering item for canvas
 setInterval(render,16);
 
@@ -246,125 +247,47 @@ function drawMusic(){
       ctx.closePath();
     }
 
-
-    if(song.tracks[currentInstrument].notes[notes].length.includes(".")){
+    pos.barCounter += tone.Time(song.tracks[currentInstrument].notes[notes].length)
+    console.log(pos.barCounter);
+    /*if(song.tracks[currentInstrument].notes[notes].length.includes(".")){
       pos.barCounter += 1/Number(song.tracks[currentInstrument].notes[notes].length.replace("n.",""))*1.5; //dotted notes are 1.5
+
     } else{ //doesnt contain a dot
       pos.barCounter += 1/Number(song.tracks[currentInstrument].notes[notes].length.replace("n",""));
-    }
-    if(pos.barCounter == 1){ //note that ends the bar
+    }*/
+    if(pos.barCounter == tone.Time("1m")){ //note that ends the bar
       pos.barCounter = 0;
       drawBar(pos);
       drawNote(song.tracks[currentInstrument].notes[notes],pos,notes,false);
-    } else if(pos.barCounter > 1){ //note needs to be tied
+    } else if(pos.barCounter > tone.Time("1m")){ //note needs to be tied
 
-      let leftOver = 1/(pos.barCounter-1);
+      //find the length of the notes on the left and right of the bar
+      let noteLeft = (pos.barCounter-tone.Time("1m"));
+      let noteRight = (tone.Time(song.tracks[currentInstrument].notes[notes].length) - noteLeft)
       let tempNote = song.tracks[currentInstrument].notes[notes];
+      //draw bar line
       drawBar(pos);
-      let lengthDotted = 1/(1/(Number(tempNote.length.replace("n","").replace(".","")))*1.5-1/leftOver)+"n";
-      let lengthNotDotted = 1/(1/(Number(tempNote.length.replace("n","").replace(".","")))-1/leftOver)+"n";
-            pos.barCounter = 0;
-      if(tempNote.length.includes(".")){
-
-        if(lengthDotted.includes(".")){ //draws normal note dont know how to deal with given notes
-          switch(Number(lengthDotted.replace("n",""))){ //finds what the note value is
-            case 8/3:
-              drawTiedNotes(notes,"4n.",leftOver+"n",pos);
-              break
-            case 8/6:
-              drawTiedNotes(notes,"2n.",leftOver+"n",pos);
-              break;
-            case 16/3:
-              drawTiedNotes(notes,"8n.",leftOver+"n",pos);
-              break;
-            case 16/3:
-              drawTiedNotes(notes,"8n.",leftOver+"n",pos);
-              break;
-            case 32/3:
-              drawTiedNotes(notes,"16n.",leftOver+"n",pos);
-              break;
-            default:
-              drawNote(song.tracks[currentInstrument].notes[notes],pos,notes,false);
-              break;
-          }
-
-        }else if((""+leftOver).includes(".")){
-          switch(leftOver){
-            case 8/3:
-              drawTiedNotes(notes,lengthDotted,"4n.",pos);
-              break
-            case 8/6:
-              drawTiedNotes(notes,lengthDotted,"2n.",pos);
-              break;
-            case 16/3:
-              drawTiedNotes(notes,lengthDotted,"8n.",pos);
-              break;
-            case 16/3:
-              drawTiedNotes(notes,lengthDotted,"8n.",pos);
-              break;
-            case 32/3:
-              drawTiedNotes(notes,lengthDotted,"16n.",pos);
-              break;
-            default:
-              drawNote(song.tracks[currentInstrument].notes[notes],pos,notes,false);
-              break;
-          }
-        } else {
-          drawTiedNotes(notes,lengthDotted,leftOver+"n",pos);
+      let noteLeftValue = null;
+      let noteRightValue = null;
+      //finds note length for each
+      for( noteLength of ["2n","2n.","4n","4n.","8n","8n.","16n","16n."]){
+        if(noteLeft == tone.Time(noteLength)){ //length of left note
+          noteLeftValue = noteLength;
         }
-
-      } else{
-        if(lengthNotDotted.includes(".")){ //draws normal note dont know how to deal with given notes
-          switch(Number(lengthNotDotted.replace("n",""))){ //finds what the note value is
-            case 8/3:
-              drawTiedNotes(notes,"4n.",leftOver+"n",pos);
-              break
-            case 8/6:
-              drawTiedNotes(notes,"2n.",leftOver+"n",pos);
-              break;
-            case 16/3:
-              drawTiedNotes(notes,"8n.",leftOver+"n",pos);
-              break;
-            case 16/3:
-              drawTiedNotes(notes,"8n.",leftOver+"n",pos);
-              break;
-            case 32/3:
-              drawTiedNotes(notes,"16n.",leftOver+"n",pos);
-              break;
-            default:
-              drawNote(song.tracks[currentInstrument].notes[notes],pos,notes.false);
-              break;
-          }
-
-        }else if((""+leftOver).includes(".")){
-          switch(leftOver){
-            case 8/3:
-              drawTiedNotes(notes,lengthNotDotted,"4n.",pos);
-              break
-            case 8/6:
-              drawTiedNotes(notes,lengthNotDotted,"2n.",pos);
-              break;
-            case 16/3:
-              drawTiedNotes(notes,lengthNotDotted,"8n.",pos);
-              break;
-            case 16/3:
-              drawTiedNotes(notes,lengthNotDotted,"8n.",pos);
-              break;
-            case 32/3:
-              drawTiedNotes(notes,lengthNotDotted,"16n.",pos);
-              break;
-            default:
-              drawNote(song.tracks[currentInstrument].notes[notes],pos,notes,false);
-              break;
-          }
-        } else {
-          drawTiedNotes(notes,lengthNotDotted,leftOver+"n",pos);
+        if(noteRight == tone.Time(noteLength)){ // length of right note
+          noteRightValue = noteLength;
         }
       }
-    } else { //normal note
+      //combo was found
+      if(noteLeftValue != null && noteRightValue != null){
+        drawTiedNotes(notes,noteLeftValue,noteRightValue,pos);
+      //combo was not found
+      } else{
+        drawNote(song.tracks[currentInstrument].notes[notes],pos,notes,false);
+      }
+    }else{ // note the end of the bar
       drawNote(song.tracks[currentInstrument].notes[notes],pos,notes,false);
     }
-
 
     pos.xOffset += pos.noteSpacing; //adds space for next note
     if(pos.xOffset >= (width-80)){
@@ -705,7 +628,8 @@ function setBPM(bpm){
   tone.Transport.bpm.value=BPM;
 }
 
-
+tone.Transport.timeSignature = [6,8]
+console.log(tone.Transport.timeSignature);
 /*************BUTTON onclicks*********************/
 volumeSlider.oninput = () => {
   volume = volumeSlider.value;
