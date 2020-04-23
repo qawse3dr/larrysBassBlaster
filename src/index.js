@@ -88,7 +88,6 @@ setupAutoSave()
 function setupAutoSave(){
   if(config.autoSave != 0){
     setInterval(autoSave,config.autoSave * 60 * 1000);
-    console.log(config.autoSave * 60 * 1000)
 
   }
 }
@@ -99,7 +98,6 @@ function autoSave(){
   } else{
     fileName = currentFile;
   }
-  console.log("he");
   saveFile(fileName)
 }
 /*song object will hold everything that the song needs.
@@ -133,6 +131,7 @@ var isSolo = false; //if the instrument is soloing
 var currentInstrument = 0;
 var currentNote = -1;
 var currentTimeouts = [];
+var generatingMusic = false;
 
 //sets the rendering item for canvas
 setInterval(render,16);
@@ -147,6 +146,10 @@ operationIndex = 0;
 /**Renders the sheetMusic*/
 function render(){ //displays the song canvas.
 
+  //if the music is being created dont render
+  if(generatingMusic){
+    return;
+  }
   //Paints Screen\
   if(isDarkMode == "true"){
     fillScreen("#031a40")
@@ -200,6 +203,8 @@ function renderBPM(){
 
 /**Draws the sheet music*/
 function drawMusic(){
+
+
   //the current width the notes take up on the current staff
 
   //package all spacing together to make it easier to use in functions
@@ -208,6 +213,11 @@ function drawMusic(){
   //how far apart the notes are
   // how far apart the lines are
   //used to see where the bar lines should be drawn
+
+  //converts bpm to a slower value for drawing due to tone.time not being super
+  //precises
+
+  //tone.Transport.bpm.value = 60;
   let pos = {xOffset:60,yOffset:100,noteSpacing:48,spaceSize:10,barCounter:0}
 
   let screenHeight = 500; //the parents screenHeight
@@ -247,23 +257,16 @@ function drawMusic(){
       ctx.closePath();
     }
 
-    pos.barCounter += tone.Time(song.tracks[currentInstrument].notes[notes].length)
-    console.log(pos.barCounter);
-    /*if(song.tracks[currentInstrument].notes[notes].length.includes(".")){
-      pos.barCounter += 1/Number(song.tracks[currentInstrument].notes[notes].length.replace("n.",""))*1.5; //dotted notes are 1.5
+    pos.barCounter += tone.Time(song.tracks[currentInstrument].notes[notes].length).toMilliseconds()
 
-    } else{ //doesnt contain a dot
-      pos.barCounter += 1/Number(song.tracks[currentInstrument].notes[notes].length.replace("n",""));
-    }*/
-    if(pos.barCounter == tone.Time("1m")){ //note that ends the bar
+    if(pos.barCounter == tone.Time("1m").toMilliseconds() ){ //note that ends the bar
       pos.barCounter = 0;
       drawBar(pos);
       drawNote(song.tracks[currentInstrument].notes[notes],pos,notes,false);
-    } else if(pos.barCounter > tone.Time("1m")){ //note needs to be tied
-
+    } else if(pos.barCounter > tone.Time("1m").toMilliseconds()){ //note needs to be tied
       //find the length of the notes on the left and right of the bar
-      let noteLeft = (pos.barCounter-tone.Time("1m"));
-      let noteRight = (tone.Time(song.tracks[currentInstrument].notes[notes].length) - noteLeft)
+      let noteLeft = (pos.barCounter-tone.Time("1m").toMilliseconds());
+      let noteRight = ( tone.Time(song.tracks[currentInstrument].notes[notes].length).toMilliseconds() - noteLeft)
       let tempNote = song.tracks[currentInstrument].notes[notes];
       //draw bar line
       drawBar(pos);
@@ -271,16 +274,17 @@ function drawMusic(){
       let noteRightValue = null;
       //finds note length for each
       for( noteLength of ["2n","2n.","4n","4n.","8n","8n.","16n","16n."]){
-        if(noteLeft == tone.Time(noteLength)){ //length of left note
+        if(noteLeft == tone.Time(noteLength).toMilliseconds()){ //length of left note
           noteLeftValue = noteLength;
         }
-        if(noteRight == tone.Time(noteLength)){ // length of right note
+        if(noteRight == tone.Time(noteLength).toMilliseconds()){ // length of right note
           noteRightValue = noteLength;
         }
       }
+      pos.barCounter= 0
       //combo was found
       if(noteLeftValue != null && noteRightValue != null){
-        drawTiedNotes(notes,noteLeftValue,noteRightValue,pos);
+        drawTiedNotes(notes,noteRightValue,noteLeftValue,pos);
       //combo was not found
       } else{
         drawNote(song.tracks[currentInstrument].notes[notes],pos,notes,false);
@@ -305,7 +309,8 @@ function drawMusic(){
   if(isClicked){
     isClicked = false;
   }
-
+  //return bpm to normal state
+  tone.Transport.bpm.value = BPM
 }
 
 /*draws ties over bars and returns the new value of barCounter;*/
@@ -319,7 +324,8 @@ function drawTiedNotes(notes,length1,length2,pos){
   pos.xOffset += pos.noteSpacing
   drawNote({name:tempNote.name,length:length2},pos,notes,true) //draws second note in tie
 
-  pos.barCounter = 1/length2.replace(".","").replace("n","");
+
+  pos.barCounter = tone.Time(length2).toMilliseconds();
 }
 function drawTie(pos,noteOffset){
     ctx.beginPath()
@@ -390,7 +396,7 @@ function drawNote(note,pos,noteIndex,tiedNote){
   }
 
   //draws a bar for eigthNotes
-  if(tiedNote == false && typeof nextNote != "undefined" && noteInfo.noteType == Notes.eigthNote && note.isRest != 1 && Number(noteIndex)%2 == 0 && nextNoteInfo.noteType == Notes.eigthNote && !getIsRest(nextNote,nextNoteInfo)){
+  if(pos.xOffset <= width-120 && tiedNote == false && typeof nextNote != "undefined" && noteInfo.noteType == Notes.eigthNote && note.isRest != 1 && Number(noteIndex)%2 == 0 && nextNoteInfo.noteType == Notes.eigthNote && !getIsRest(nextNote,nextNoteInfo)){
     ctx.drawImage(spriteSheet,Notes.quarterNote,32*noteInfo.isRest,32,32,pos.xOffset+1,pos.yOffset + 1+ noteInfo.noteOffset,32,32);
     getOffset(nextNote,nextNoteInfo)
     getUpsideDown(nextNoteInfo)
@@ -401,7 +407,7 @@ function drawNote(note,pos,noteIndex,tiedNote){
 
     }
     drawBeam(pos,noteInfo.noteOffset,nextNoteInfo.noteOffset,noteInfo.isUpsideDown)
-  } else if(tiedNote == false &&  typeof prevNote != "undefined" && noteInfo.noteType == Notes.eigthNote && note.isRest != 1 && Number(noteIndex)%2 == 1 && prevNoteInfo.noteType == Notes.eigthNote && !getIsRest(prevNote,prevNoteInfo)){
+  } else if( pos.xOffset >= 90 && tiedNote == false &&  typeof prevNote != "undefined" && noteInfo.noteType == Notes.eigthNote && note.isRest != 1 && Number(noteIndex)%2 == 1 && prevNoteInfo.noteType == Notes.eigthNote && !getIsRest(prevNote,prevNoteInfo)){
     getOffset(prevNote,prevNoteInfo)
     getUpsideDown(prevNoteInfo)
     if(!prevNoteInfo.isUpsideDown && noteInfo.isUpsideDown){
@@ -531,8 +537,9 @@ function drawSymbol(symbol, pos,noteShift){
 function drawBeam(pos,noteOffset1,noteOffset2,isUpsideDown){
   ctx.beginPath();
   ctx.lineWidth = 3;
-  ctx.moveTo(pos.xOffset+5,pos.yOffset+noteOffset1+isUpsideDown*30);
-  ctx.lineTo(pos.xOffset+13+pos.noteSpacing,pos.yOffset+noteOffset2+isUpsideDown*30)
+
+  ctx.moveTo(pos.xOffset+14-isUpsideDown*7,pos.yOffset+noteOffset1+2+isUpsideDown*28);
+  ctx.lineTo(pos.xOffset+8+pos.noteSpacing+!isUpsideDown*7,pos.yOffset+2+noteOffset2+isUpsideDown*28)
   ctx.stroke()
   ctx.lineWidth = 1;
 
@@ -628,7 +635,7 @@ function setBPM(bpm){
   tone.Transport.bpm.value=BPM;
 }
 
-tone.Transport.timeSignature = [6,8]
+tone.Transport.timeSignature = 4
 console.log(tone.Transport.timeSignature);
 /*************BUTTON onclicks*********************/
 volumeSlider.oninput = () => {
@@ -637,6 +644,7 @@ volumeSlider.oninput = () => {
 }
 
 function playSong(){
+  generatingMusic = true;
   isPlaying = true;
   playBtn.innerText = "Stop"
   let timeoutOffsets = [];
@@ -699,6 +707,7 @@ function playSong(){
     }, timeoutOffsets[time]*1000));
   }
   tone.Transport.start();
+  generatingMusic = false;
 
 }
 
@@ -871,7 +880,7 @@ function loadTracks(){
 function pushOperation(obj){
 
   //overwrites all data ontop of the  index of the stack.
-  console.log(obj)
+
   if(!ignoreOperation){
     operationIndex++;
     operation.push(obj); //pushes obj onto the stack
@@ -1038,6 +1047,7 @@ function redo(event){
   }
   ignoreOperation = false;
 }
+
 /********************IPC COMMUNICATIONS*************************/
 ipcRenderer.on("send-bpm", (event,bpm) => { //changes bpm to new given bpm
   setBPM(bpm);
@@ -1131,6 +1141,10 @@ function delNote(event) {
 ipcRenderer.on("sharp", sharp);
 function sharp(event){
   if(song.tracks[currentInstrument].notes.length == 0 ||song.tracks[currentInstrument].notes[currentNote].name == "r" ){
+    return;
+  }
+  //chord operation can not be done
+  if(song.tracks[currentInstrument].notes[currentNote].name == "chord"){
     return;
   }
   if(song.tracks[currentInstrument].notes[currentNote].name.includes("#")){
