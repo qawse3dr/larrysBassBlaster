@@ -18,7 +18,7 @@ button{
   left:0px;
 }
 .col2{
-  width:32px;
+  width:128px;
   left:0px;
   position: absolute;
   margin-left: 50%;
@@ -49,7 +49,7 @@ button{
 
 .wholeRest{
   background-position: 8px -30px;
-}
+}noImage
 
 .halfRest{
   background-position: -26px -36px;
@@ -65,4 +65,8 @@ button{
 
 .sixteenthRest{
   background-position: -122px -32px;
+}
+
+.chord{
+  width: 64px;
 }

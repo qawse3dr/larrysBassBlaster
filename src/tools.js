@@ -116,3 +116,8 @@ function shortcutHandler(input,keyCombo){
      && input.control == keyCombo.Ctrl
      )
 }
+
+
+function chordBuilder(){
+  electron.ipcRenderer.send("chord")
+}

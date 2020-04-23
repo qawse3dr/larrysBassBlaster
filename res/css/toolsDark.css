@@ -66,3 +66,7 @@ button{
 .sixteenthRest{
   background-position: -122px -32px;
 }
+
+.chord{
+  width: 64px;
+}
