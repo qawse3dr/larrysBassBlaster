@@ -332,6 +332,27 @@ function editingTools(){
   toolsWin.show();
 }
 
+function chordWindow(){
+
+  chordWin = new BrowserWindow({
+    width: 400,
+    height: 400,
+    alwaysOnTop: true,
+    icon:__dirname + "/Logo.png",
+    webPreferences: {
+      nodeIntegration: true,
+
+    }
+  })
+
+  //toolsWin.webContents.openDevTools();
+  chordWin.setMenuBarVisibility(false);
+  chordWin.setResizable(false);
+  // and load the index.html of the app.
+  chordWin.loadFile('src/chord.html')
+  chordWin.show();
+}
+
 function titleWindow(){
   // Create the browser window.
   titleWin = new BrowserWindow({
@@ -429,6 +450,13 @@ ipcMain.on("send-title-to-main", (event,title) => {
 ipcMain.on("open-bpm-window", (event) => {
   //opens bpm window
   BPMWindow();
+})
+
+//opens chordbuilder
+//asked to open bpm window
+ipcMain.on("chord", (event) => {
+  //opens bpm window
+  chordWindow();
 })
 
 //waitings for save to be called
