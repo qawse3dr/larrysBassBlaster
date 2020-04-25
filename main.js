@@ -68,7 +68,7 @@ function createWindow () {
     }
   })
   //win.setResizable(false);
-  //win.webContents.openDevTools();
+  win.webContents.openDevTools();
   // and load the index.html of the app.
   win.loadFile('src/index.html')
   win.on("close", () => {
@@ -345,9 +345,9 @@ function chordWindow(){
     }
   })
 
-  //toolsWin.webContents.openDevTools();
+  chordWin.webContents.openDevTools();
   chordWin.setMenuBarVisibility(false);
-  chordWin.setResizable(false);
+  //chordWin.setResizable(false);
   // and load the index.html of the app.
   chordWin.loadFile('src/chord.html')
   chordWin.show();
@@ -514,6 +514,12 @@ ipcMain.on("repeat",(event)=>{
 ipcMain.on("getConfig",(event)=>{
   event.returnValue = config;
 })
+ipcMain.on("getMainID",(event)=>{
+  console.log(win.id);
+  event.returnValue = win.id;
+})
+
+
 
 ipcMain.on("copy",(event) =>{
   win.webContents.send("copy");
