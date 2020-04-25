@@ -634,7 +634,55 @@ function play(event){ //plays the song or stops it.
 /*Creates the synth object*/
 function createSynth(){
   if(synth != null) synth.dispose()
-  synth = new tone.PolySynth(6).toMaster();
+  //synth = new tone.PolySynth(6).toMaster();
+  synth = new tone.Sampler({
+    "A#2":"../res/notes/cleanGuitar/AS2.ogg",
+    "A#3":"../res/notes/cleanGuitar/AS3.ogg",
+    "A#4":"../res/notes/cleanGuitar/AS4.ogg",
+    "A#5":"../res/notes/cleanGuitar/AS5.ogg",
+    "A2":"../res/notes/cleanGuitar/A2.ogg",
+    "A3":"../res/notes/cleanGuitar/A3.ogg",
+    "A4":"../res/notes/cleanGuitar/A4.ogg",
+    "A5":"../res/notes/cleanGuitar/A5.ogg",
+    "B2":"../res/notes/cleanGuitar/B2.ogg",
+    "B3":"../res/notes/cleanGuitar/B3.ogg",
+    "B4":"../res/notes/cleanGuitar/B4.ogg",
+    "B5":"../res/notes/cleanGuitar/B5.ogg",
+    "C#3":"../res/notes/cleanGuitar/CS3.ogg",
+    "C#4":"../res/notes/cleanGuitar/CS4.ogg",
+    "C#5":"../res/notes/cleanGuitar/CS5.ogg",
+    "C#6":"../res/notes/cleanGuitar/CS6.ogg",
+    "C3":"../res/notes/cleanGuitar/C3.ogg",
+    "C4":"../res/notes/cleanGuitar/C4.ogg",
+    "C5":"../res/notes/cleanGuitar/C5.ogg",
+    "C6":"../res/notes/cleanGuitar/C6.ogg",
+    "D#3":"../res/notes/cleanGuitar/DS3.ogg",
+    "D#4":"../res/notes/cleanGuitar/DS4.ogg",
+    "D#5":"../res/notes/cleanGuitar/DS5.ogg",
+    "D3":"../res/notes/cleanGuitar/D3.ogg",
+    "D4":"../res/notes/cleanGuitar/D4.ogg",
+    "D5":"../res/notes/cleanGuitar/D5.ogg",
+    "E2":"../res/notes/cleanGuitar/E2.ogg",
+    "E3":"../res/notes/cleanGuitar/E3.ogg",
+    "E4":"../res/notes/cleanGuitar/E4.ogg",
+    "E5":"../res/notes/cleanGuitar/E5.ogg",
+    "F#2":"../res/notes/cleanGuitar/FS2.ogg",
+    "F#3":"../res/notes/cleanGuitar/FS3.ogg",
+    "F#4":"../res/notes/cleanGuitar/FS4.ogg",
+    "F#5":"../res/notes/cleanGuitar/FS5.ogg",
+    "F2":"../res/notes/cleanGuitar/F2.ogg",
+    "F3":"../res/notes/cleanGuitar/F3.ogg",
+    "F4":"../res/notes/cleanGuitar/F4.ogg",
+    "F5":"../res/notes/cleanGuitar/F5.ogg",
+    "G#2":"../res/notes/cleanGuitar/GS2.ogg",
+    "G#3":"../res/notes/cleanGuitar/GS3.ogg",
+    "G#4":"../res/notes/cleanGuitar/GS4.ogg",
+    "G#5":"../res/notes/cleanGuitar/GS5.ogg",
+    "G2":"../res/notes/cleanGuitar/G2.ogg",
+    "G3":"../res/notes/cleanGuitar/G3.ogg",
+    "G4":"../res/notes/cleanGuitar/G4.ogg",
+    "G5":"../res/notes/cleanGuitar/G5.ogg"
+  }).toMaster();
 }
 /*Gets the BPM*/
 function getBPM(){
