@@ -3,12 +3,63 @@
 #chord{
   background: white;
   left:0;
+  magin:0;
   margin-left:0;
   border-left-width: 0;
   margin-top:15%
+
 }
 
 button{
   margin-top:10%;
   margin-left:20%;
+}
+canvas{
+  display: inline-block;
+}
+.edit{
+  width: 100px;
+
+  display: inline-block;
+}
+.edit > button{
+
+  left:0;
+  width:100px;
+}
+
+.length > button{
+  width:32px;
+  height:32px;
+  margin:0px;
+  border: 0px;
+  padding:0px;
+  background-image: url("../images/musicNotes.png");
+  vertical-align:top;
+  right:0px;
+  border-radius: 16px;
+}
+.wholeNote{
+  background-position: 8px -8px;
+}
+
+.halfNote{
+  background-position: -26px 0px;
+}
+
+.quarterNote{
+  background-position: -58px 0px;
+}
+
+.eigthNote{
+  background-position: -90px 0px;
+}
+
+.sixteenthNote{
+  background-position: -122px 0px;
+}
+
+.noImage{
+  background-image:none;
+  font-size: 16pt;
 }

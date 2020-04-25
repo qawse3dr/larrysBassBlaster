@@ -289,11 +289,13 @@ function drawMusic(){
       } else{
         drawNote(song.tracks[currentInstrument].notes[notes],pos,notes,false);
       }
-    }else{ // note the end of the bar
+    }else{ // not the end of the bar
       drawNote(song.tracks[currentInstrument].notes[notes],pos,notes,false);
     }
 
-    pos.xOffset += pos.noteSpacing; //adds space for next note
+    //adds space for next note
+    pos.xOffset += pos.noteSpacing;
+
     if(pos.xOffset >= (width-80)){
       pos.xOffset = 60;
       //creates new staff
@@ -362,6 +364,11 @@ function drawStaff(pos){
 
 /**Draws note given by index note in song in the current track.*/
 function drawNote(note,pos,noteIndex,tiedNote){
+  //if its a chord call the chord renderer
+  if(note.name == "chord"){
+    drawChord(note,pos,noteIndex);
+    return
+  }
   let noteInfo = {noteOffset:0, //how much to shift the y offset for the note.
                   noteType:0, //the shift in the spriteSheet needed for note type.
                   isDotted:false, //if the note is dotted
@@ -415,8 +422,7 @@ function drawNote(note,pos,noteIndex,tiedNote){
       noteInfo.noteOffset -= 18
     } else if(prevNoteInfo.isUpsideDown && !noteInfo.isUpsideDown){
       noteInfo.isRest= 2
-            noteInfo.noteOffset += 18
-
+      noteInfo.noteOffset += 18
     }
     ctx.drawImage(spriteSheet,Notes.quarterNote,32*noteInfo.isRest,32,32,pos.xOffset+1,pos.yOffset + 1+ noteInfo.noteOffset,32,32);
   }else {
@@ -428,6 +434,14 @@ function drawNote(note,pos,noteIndex,tiedNote){
   return noteInfo.noteOffset
 }
 
+
+/**draws chords*/
+function drawChord(chord,pos,noteIndex){
+  for(note of chord.chord){
+
+    drawNote({name:note,length:chord.length},pos,noteIndex,false)
+  }
+}
 /**checks if its upsideDown*/
 function getUpsideDown(noteInfo){
   if(noteInfo.noteOffset <= -5 && noteInfo.isRest != 1){ //flips notes if above middle line
@@ -648,53 +662,79 @@ function playSong(){
   isPlaying = true;
   playBtn.innerText = "Stop"
   let timeoutOffsets = [];
-  let startOffset = (isCountOn) ? tone.Time("4n")*8 : 0; //offset for start count
+  let startOffset = (isCountOn) ? tone.Time("4n")*tone.Transport.timeSignature*2 : 0; //offset for start count
   let maxDelta = 0; //gets the length of the song.
-
+  let metronomeCounter = 0;
   synth.sync(); //start syncing the tracks
   if(currentNote == -1){
     currentNote=0;
   }
   if(isCountOn){
-    for(let i = 0; i < 8; i++)
-    synth.triggerAttackRelease("C7","32n",tone.Time("4n")*i,1);
+    let i = 0
+    let countInCounter = 0;
+    while(countInCounter < tone.Time("2m").toMilliseconds()){
+      synth.triggerAttackRelease("C7","32n",tone.Time("4n")*i,0.75);
+      countInCounter += tone.Time("4n").toMilliseconds();
+      i++;
+    }
+
   }
   //loops through and syncs tracks
   if(currentNote >= song.tracks[currentInstrument].notes.length){
     currentNote = -1;
     canvas.parentElement.scrollTop = 0
   }
-  for(track in song.tracks){
+  for(track of song.tracks){
     if(isSolo){ //skip other tracks if you are soloing
-      if(track != currentInstrument){
+      if(track != song.tracks[currentInstrument]){
         continue;
       }
     }
     let delta = startOffset; //time passed
-    for(let note = currentNote; note < song.tracks[track].notes.length;note++){ //adds song to queue
+    //first ding for metronome
+    if(metronome){
+      //synth.triggerAttackRelease("C7","32n",startOffset,1);
+    }
+    for(let note = currentNote; note < track.notes.length;note++){ //adds song to queue
+
+
       if(currentNote == -1) continue //add to make sure there isnt a false positive
-      if(song.tracks[track].notes[note].name !== "r"){
-        synth.triggerAttackRelease(song.tracks[track].notes[note].name,song.tracks[track].notes[note].length,delta,0.5);
+      if(track.notes[note].name == "chord"){
+        synth.triggerAttackRelease(track.notes[note].chord,track.notes[note].length,delta,0.5);
+
+      } else if(track.notes[note].name !== "r"){
+        synth.triggerAttackRelease(track.notes[note].name,track.notes[note].length,delta,0.5);
         //console.log(song.tracks[track].notes[note]);
       }
+      delta += tone.Time(track.notes[note].length); //add offset
+      //places the dings for metronome
+      if(metronome){
+        //first note only if its smaller than one beat
 
-      delta += tone.Time(song.tracks[track].notes[note].length); //add offset
+        metronomeCounter += tone.Time(track.notes[note].length)
+        if(metronomeCounter == tone.Time("4n") ){
+          synth.triggerAttackRelease("C7","32n",delta-tone.Time("4n"),1);
+          metronomeCounter = 0;
+        } else if(metronomeCounter > tone.Time("4n")){
 
-      if(track == currentInstrument){ //setsvar isCountOn = false; //if starting count is on.
+          for(let i = 0; i < Math.ceil(metronomeCounter/tone.Time("4n"));i++){
+            synth.triggerAttackRelease("C7","32n",tone.Time("4n")*Math.floor((delta-tone.Time(track.notes[note].length))/tone.Time("4n"))+(i)*tone.Time("4n"),1);
+          }
+          metronomeCounter = 0;
+        }
+
+      }
+      //moves the play counter
+      if(track == song.tracks[currentInstrument]){ //setsvar isCountOn = false; //if starting count is on.
         timeoutOffsets.push(delta);
       }
+
       if(maxDelta<delta) maxDelta = delta;
     }
 
-    }
-    if(metronome){ //metronome is enabled
-      let delta = startOffset;
-      for(let ticks = 0; ticks < getTimeInBeats(maxDelta); ticks ++){ //converts time to quarter notes
-        synth.triggerAttackRelease("C7","32n",delta,1);
-        delta += tone.Time("4n"); //add offset
-      }
   }
-  for(time in timeoutOffsets){ //sets the timer for changing notes
+
+  for(time of timeoutOffsets){ //sets the timer for changing notes
     currentTimeouts.push(setTimeout( () => {
       currentNote++;
       if(currentNote == song.tracks[currentInstrument].notes.length){
@@ -704,7 +744,7 @@ function playSong(){
       }
 
 
-    }, timeoutOffsets[time]*1000));
+    }, time*1000));
   }
   tone.Transport.start();
   generatingMusic = false;
@@ -1048,6 +1088,8 @@ function redo(event){
   ignoreOperation = false;
 }
 
+
+
 /********************IPC COMMUNICATIONS*************************/
 ipcRenderer.on("send-bpm", (event,bpm) => { //changes bpm to new given bpm
   setBPM(bpm);
@@ -1212,9 +1254,19 @@ function repeat(event){
   if(song.tracks[currentInstrument].notes.length == 0){
     return; //no note to repeat
   }
-  let note = {
-    name: song.tracks[currentInstrument].notes[currentNote].name,
-    length: song.tracks[currentInstrument].notes[currentNote].length
+  let note = null;
+  if(song.tracks[currentInstrument].notes[currentNote].name == "chord"){
+    note = {
+      name:"chord",
+      length: song.tracks[currentInstrument].notes[currentNote].length,
+      chord: song.tracks[currentInstrument].notes[currentNote].chord.slice()
+    }
+  }else{
+    note = {
+      name: song.tracks[currentInstrument].notes[currentNote].name,
+      length: song.tracks[currentInstrument].notes[currentNote].length
+    }
+
   }
 
   song.tracks[currentInstrument].notes.splice(Number(currentNote)+1,0,note);
@@ -1361,6 +1413,14 @@ ipcRenderer.on("copy",copy);
 ipcRenderer.on("paste",paste);
 ipcRenderer.on("undo",undo);
 ipcRenderer.on("redo",redo);
+ipcRenderer.on("getClef",(event,id) =>{
+
+  ipcRenderer.sendTo(id,"getClef",song.tracks[currentInstrument].clef);
+});
+ipcRenderer.on("addChord",(event,chord) =>{
+  console.log(chord);
+  song.tracks[currentInstrument].notes.splice(Number(currentNote)+1,0,chord);
+})
 /********************IPC COMMUNICATIONS*************************/
 
 
@@ -1466,8 +1526,18 @@ function copy(event){
 
 function paste(event){
   if(copyStart != -1 && copyEnd == -1){//only copies 1 note
-    let copyNote = {name:song.tracks[copyTrack].notes[copyStart].name,
-                    length:song.tracks[copyTrack].notes[copyStart].length}
+    let copyNote = null;
+    if(song.tracks[copyTrack].notes[copyStart].name !="chord"){
+      copyNote = {name:song.tracks[copyTrack].notes[copyStart].name,
+        length:song.tracks[copyTrack].notes[copyStart].length}
+    } else{
+      copyNote = {
+        name:"chord",
+        length: song.tracks[currentInstrument].notes[currentNote].length,
+        chord: song.tracks[currentInstrument].notes[currentNote].chord.slice()
+      }
+    }
+
     song.tracks[currentInstrument].notes.splice(Number(currentNote)+1,0,copyNote);
     if(song.tracks[currentInstrument].notes.length != 1 ){
       currentNote++;

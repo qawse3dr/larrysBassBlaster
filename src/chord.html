@@ -9,9 +9,27 @@
   </head>
   <body>
     <header>Chord Builder</header>
-    <canvas id="chord" width="400" height="200"></canvas>
-    <button type="cancel" name="button">Cancel</button>
-    <button type="add" name="button">Add</button>
+    <canvas id="chord" width="250" height="200"></canvas>
+    <div class="edit">
+      <button type="button" name="button" onclick="addNote()">add Note</button>
+      <button type="button" name="button" onclick="delNote()">remove Note</button>
+      <button type="button" name="button" onclick="moveUp()">move up</button>
+      <button type="button" name="button" onclick="moveDown()">move down</button>
+
+    </div>
+    <div class="length">
+      <button type="button" class="wholeNote" onclick="wholeNote()"></button>
+      <button type="button" class="halfNote" onclick="halfNote()"></button>
+      <button type="button" class="quarterNote" onclick="quarterNote()"></button>
+      <button type="button" class="eigthNote" onclick="eigthNote()"></button>
+      <button type="button" class="sixteenthNote" onclick="sixteenthNote()"></button>
+      <button type="button" name="button" class="noImage" onclick="sharp()">&#9839;</button>
+      <button type="button" name="button" class="noImage" onclick="flat()" ><i>&#9837;</i></button>
+      <button type="button" name="button" class="noImage" onclick="dot()"><i>*</i></button>
+
+    </div>
+    <button type="cancel" name="button" onclick="cancel()">Cancel</button>
+    <button type="add" name="button" onclick="add()">Add</button>
     <script src="chord.js"></script>
   </body>
 </html>
