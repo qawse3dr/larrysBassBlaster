@@ -123,7 +123,7 @@ var song = {
 loadTracks()
 //music vars
 var BPM = 120; //The beats per minute of song
-var volume = 0;
+var volume = -26;
 var isPlaying = false;
 var isCountOn = false; //if starting count is on.
 var metronome = false; //if the metronome is on.
@@ -140,6 +140,8 @@ setInterval(render,16);
 setBPM(song.bpm);
 setTitle(song.title);
 
+//lets the render know its a chord being drawn
+var drawingChord = false;
 operation = []
 operationIndex = 0;
 /*********************GRAPHICS************************/
@@ -377,7 +379,7 @@ function drawNote(note,pos,noteIndex,tiedNote){
   //gets note offsets
   getOffset(note,noteInfo);
 
-  getIsRest(note,noteInfo)
+  getIsRest(note,noteInfo);
 
   if(note.name.includes("#")){
     drawSymbol("#", pos,noteInfo.noteOffset)
@@ -385,49 +387,54 @@ function drawNote(note,pos,noteIndex,tiedNote){
     drawSymbol("b", pos, noteInfo.noteOffset)
   }
 
-  getNoteType(note,noteInfo)
-  drawExtraNotion(noteInfo,pos)
+  getNoteType(note,noteInfo);
+  drawExtraNotion(noteInfo,pos);
 
-  getUpsideDown(noteInfo)
-
-  let nextNoteInfo = {noteType:0,isDotted:0,noteOffset:0}
-  let nextNote = song.tracks[currentInstrument].notes[Number(noteIndex)+1];
-  if(typeof nextNote != "undefined"){
-      getNoteType(nextNote,nextNoteInfo);
-  }
-
-  let prevNoteInfo = {noteType:0,isDotted:0,noteOffset:0,isUpsideDown:false,isRest:0}
-  let prevNote = song.tracks[currentInstrument].notes[Number(noteIndex)-1];
-  if(typeof prevNote != "undefined"){
-      getNoteType(prevNote,prevNoteInfo);
-  }
-
-  //draws a bar for eigthNotes
-  if(pos.xOffset <= width-120 && tiedNote == false && typeof nextNote != "undefined" && noteInfo.noteType == Notes.eigthNote && note.isRest != 1 && Number(noteIndex)%2 == 0 && nextNoteInfo.noteType == Notes.eigthNote && !getIsRest(nextNote,nextNoteInfo)){
-    ctx.drawImage(spriteSheet,Notes.quarterNote,32*noteInfo.isRest,32,32,pos.xOffset+1,pos.yOffset + 1+ noteInfo.noteOffset,32,32);
-    getOffset(nextNote,nextNoteInfo)
-    getUpsideDown(nextNoteInfo)
-    if(!nextNoteInfo.isUpsideDown && noteInfo.isUpsideDown){
-      nextNoteInfo.noteOffset += 18
-    } else if(nextNoteInfo.isUpsideDown && !noteInfo.isUpsideDown){
-      nextNoteInfo.noteOffset -= 18
-
+  if(!drawingChord){
+    getUpsideDown(noteInfo);
+    let nextNoteInfo = {noteType:0,isDotted:0,noteOffset:0}
+    let nextNote = song.tracks[currentInstrument].notes[Number(noteIndex)+1];
+    if(typeof nextNote != "undefined"){
+        getNoteType(nextNote,nextNoteInfo);
     }
-    drawBeam(pos,noteInfo.noteOffset,nextNoteInfo.noteOffset,noteInfo.isUpsideDown)
-  } else if( pos.xOffset >= 90 && tiedNote == false &&  typeof prevNote != "undefined" && noteInfo.noteType == Notes.eigthNote && note.isRest != 1 && Number(noteIndex)%2 == 1 && prevNoteInfo.noteType == Notes.eigthNote && !getIsRest(prevNote,prevNoteInfo)){
-    getOffset(prevNote,prevNoteInfo)
-    getUpsideDown(prevNoteInfo)
-    if(!prevNoteInfo.isUpsideDown && noteInfo.isUpsideDown){
-      noteInfo.isRest= 0
-      noteInfo.noteOffset -= 18
-    } else if(prevNoteInfo.isUpsideDown && !noteInfo.isUpsideDown){
-      noteInfo.isRest= 2
-      noteInfo.noteOffset += 18
+
+    let prevNoteInfo = {noteType:0,isDotted:0,noteOffset:0,isUpsideDown:false,isRest:0}
+    let prevNote = song.tracks[currentInstrument].notes[Number(noteIndex)-1];
+    if(typeof prevNote != "undefined"){
+        getNoteType(prevNote,prevNoteInfo);
     }
-    ctx.drawImage(spriteSheet,Notes.quarterNote,32*noteInfo.isRest,32,32,pos.xOffset+1,pos.yOffset + 1+ noteInfo.noteOffset,32,32);
-  }else {
-      ctx.drawImage(spriteSheet,noteInfo.noteType,32*noteInfo.isRest,32,32,pos.xOffset+1,pos.yOffset + 1+ noteInfo.noteOffset,32,32);
+
+    //draws a bar for eigthNotes
+    if(pos.xOffset <= width-120 && tiedNote == false && typeof nextNote != "undefined" && noteInfo.noteType == Notes.eigthNote && note.isRest != 1 && Number(noteIndex)%2 == 0 && nextNoteInfo.noteType == Notes.eigthNote && !getIsRest(nextNote,nextNoteInfo)){
+      ctx.drawImage(spriteSheet,Notes.quarterNote,32*noteInfo.isRest,32,32,pos.xOffset+1,pos.yOffset + 1+ noteInfo.noteOffset,32,32);
+      getOffset(nextNote,nextNoteInfo)
+      getUpsideDown(nextNoteInfo)
+      if(!nextNoteInfo.isUpsideDown && noteInfo.isUpsideDown){
+        nextNoteInfo.noteOffset += 18
+      } else if(nextNoteInfo.isUpsideDown && !noteInfo.isUpsideDown){
+        nextNoteInfo.noteOffset -= 18
+
+      }
+      drawBeam(pos,noteInfo.noteOffset,nextNoteInfo.noteOffset,noteInfo.isUpsideDown)
+    } else if( pos.xOffset >= 90 && tiedNote == false &&  typeof prevNote != "undefined" && noteInfo.noteType == Notes.eigthNote && note.isRest != 1 && Number(noteIndex)%2 == 1 && prevNoteInfo.noteType == Notes.eigthNote && !getIsRest(prevNote,prevNoteInfo)){
+      getOffset(prevNote,prevNoteInfo)
+      getUpsideDown(prevNoteInfo)
+      if(!prevNoteInfo.isUpsideDown && noteInfo.isUpsideDown){
+        noteInfo.isRest= 0
+        noteInfo.noteOffset -= 18
+      } else if(prevNoteInfo.isUpsideDown && !noteInfo.isUpsideDown){
+        noteInfo.isRest= 2
+        noteInfo.noteOffset += 18
+      }
+      ctx.drawImage(spriteSheet,Notes.quarterNote,32*noteInfo.isRest,32,32,pos.xOffset+1,pos.yOffset + 1+ noteInfo.noteOffset,32,32);
+    }else {
+        ctx.drawImage(spriteSheet,noteInfo.noteType,32*noteInfo.isRest,32,32,pos.xOffset+1,pos.yOffset + 1+ noteInfo.noteOffset,32,32);
+    }
+  } else{
+    ctx.drawImage(spriteSheet,noteInfo.noteType,32*noteInfo.isRest,32,32,pos.xOffset+1,pos.yOffset + 1+ noteInfo.noteOffset,32,32);
   }
+
+
 
   checkIfClicked(pos,noteIndex)
 
@@ -437,10 +444,11 @@ function drawNote(note,pos,noteIndex,tiedNote){
 
 /**draws chords*/
 function drawChord(chord,pos,noteIndex){
+  drawingChord = true;
   for(note of chord.chord){
-
     drawNote({name:note,length:chord.length},pos,noteIndex,false)
   }
+  drawingChord = false;
 }
 /**checks if its upsideDown*/
 function getUpsideDown(noteInfo){
@@ -503,7 +511,7 @@ function getNoteType(note,noteInfo){
 function drawExtraNotion(noteInfo,pos){
   //draw lines for note if its off the staff
   if(noteInfo.noteOffset < -5){
-    for(let lines = -10; lines >= noteInfo.noteOffset+25; lines -= 10){
+    for(let lines = -10; lines >= noteInfo.noteOffset+25; lines -= pos.spaceSize){
       ctx.beginPath();
       ctx.moveTo(pos.xOffset,pos.yOffset+lines);
       ctx.lineTo(pos.xOffset+25,pos.yOffset+lines);
@@ -512,7 +520,7 @@ function drawExtraNotion(noteInfo,pos){
     }
   }
   else if(noteInfo.noteOffset > 20){
-    for(let lines = 40; lines <= noteOffset+30; lines += 10){
+    for(let lines = 40; lines <= noteInfo.noteOffset+30; lines += pos.spaceSize){
       ctx.beginPath();
       ctx.moveTo(pos.xOffset-5,pos.yOffset+lines);
       ctx.lineTo(pos.xOffset+20,pos.yOffset+lines);
@@ -794,7 +802,10 @@ function playSong(){
 
     }, time*1000));
   }
+  synth.volume.value = volume;
   tone.Transport.start();
+  console.log(volume);
+
   generatingMusic = false;
 
 }
@@ -1307,7 +1318,7 @@ function repeat(event){
     note = {
       name:"chord",
       length: song.tracks[currentInstrument].notes[currentNote].length,
-      chord: song.tracks[currentInstrument].notes[currentNote].chord.slice()
+      chord: [...song.tracks[currentInstrument].notes[currentNote].chord]
     }
   }else{
     note = {
@@ -1579,10 +1590,12 @@ function paste(event){
       copyNote = {name:song.tracks[copyTrack].notes[copyStart].name,
         length:song.tracks[copyTrack].notes[copyStart].length}
     } else{
+
+      console.log([...song.tracks[currentInstrument].notes[currentNote].chord]);
       copyNote = {
         name:"chord",
         length: song.tracks[currentInstrument].notes[currentNote].length,
-        chord: song.tracks[currentInstrument].notes[currentNote].chord.slice()
+        chord: [...song.tracks[currentInstrument].notes[currentNote].chord]
       }
     }
 
@@ -1604,8 +1617,18 @@ function paste(event){
       copyEnd = temp;
     }
     for(let x = copyStart; x <= copyEnd; x++){
-      copyNote = {name:song.tracks[copyTrack].notes[x].name,
-                    length:song.tracks[copyTrack].notes[x].length}
+      if(song.tracks[copyTrack].notes[copyStart].name !="chord"){
+        copyNote = {name:song.tracks[copyTrack].notes[copyStart].name,
+          length:song.tracks[copyTrack].notes[copyStart].length}
+      } else{
+
+        console.log([...song.tracks[currentInstrument].notes[currentNote].chord]);
+        copyNote = {
+          name:"chord",
+          length: song.tracks[currentInstrument].notes[currentNote].length,
+          chord: [...song.tracks[currentInstrument].notes[currentNote].chord]
+        }
+      }
       song.tracks[currentInstrument].notes.splice(Number(currentNote)+1,0,copyNote);
       copiedNotes.push(copyNote);
       if(song.tracks[currentInstrument].notes.length != 1 ){

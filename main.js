@@ -68,7 +68,7 @@ function createWindow () {
     }
   })
   //win.setResizable(false);
-  win.webContents.openDevTools();
+  //win.webContents.openDevTools();
   // and load the index.html of the app.
   win.loadFile('src/index.html')
   win.on("close", () => {
@@ -345,9 +345,9 @@ function chordWindow(){
     }
   })
 
-  chordWin.webContents.openDevTools();
+  //chordWin.webContents.openDevTools();
   chordWin.setMenuBarVisibility(false);
-  //chordWin.setResizable(false);
+  chordWin.setResizable(false);
   // and load the index.html of the app.
   chordWin.loadFile('src/chord.html')
   chordWin.show();
