@@ -81,6 +81,8 @@ function createWindow () {
     titleWin = null;
     if(trackWin) trackWin.destroy();
     trackWin = null;
+    if(chordWin) chordWin.destroy();
+    chordWin = null;
   })
   //opens toolkit at launch
   editingTools();
@@ -313,8 +315,8 @@ function editingTools(){
   // Create the browser window.
 
   toolsWin = new BrowserWindow({
-    width: 150,
-    height: 310,
+    width: 225,
+    height: 340,
     x:400,
     y:400,
     alwaysOnTop: true,
@@ -333,11 +335,12 @@ function editingTools(){
   toolsWin.show();
 }
 
+var chordWin = null;
 function chordWindow(){
 
   chordWin = new BrowserWindow({
-    width: 400,
-    height: 400,
+    width: 450,
+    height: 450,
     alwaysOnTop: true,
     icon:__dirname + "/Logo.png",
     webPreferences: {
