@@ -27,3 +27,6 @@ down as this project is for personal use but feel free to fork and continue it.
 ## License
 GPL 3
 feel free to fork it or clone it and play around with the code
+
+## Special Thanks
+Big thanks to the tone.js, electron, nodejs and electron-promt developers this project would be possible without you.
