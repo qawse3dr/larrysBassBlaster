@@ -2,6 +2,8 @@ const electron = require("electron");
 const path = require("path");
 const ipcRenderer = electron.ipcRenderer;
 const remote = require('electron').remote;
+const prompt = require('electron-prompt');
+
 //configs
 var config = ipcRenderer.sendSync("getConfig");
 var isDarkMode = config.darkMode;
@@ -10,6 +12,9 @@ if(isDarkMode == "true"){
 }
 const canvas = document.getElementById("chord"); //render
 canvas.addEventListener("click",canvasClick);
+
+const chordSelect = document.getElementById("chords");
+updateChords();
 //Setting up graphics
 var ctx = canvas.getContext("2d");
 var height = canvas.height; //length and width of canvas
@@ -48,7 +53,7 @@ if(isDarkMode == "true"){
   ctx.fillStyle = "#000000";
   ctx.strokeStyle = '#000000';
 }
-chord = {name:"chord",chord:["C4","C#3","D3"],length:"4n"}
+chord = {name:"chord",chord:[],length:"4n"}
 var pos = {xOffset:60,yOffset:100,noteSpacing:15,spaceSize:10,barCounter:0};
 drawChord()
 setInterval(drawChord,16);
@@ -210,7 +215,7 @@ function drawExtraNotion(noteInfo){
     }
   }
   else if(noteInfo.noteOffset > 20){
-    for(let lines = 40; lines <= noteOffset+30; lines += 10){
+    for(let lines = 50; lines <= noteInfo.noteOffset+26; lines += 10){
       ctx.beginPath();
       ctx.moveTo(pos.xOffset-5,pos.yOffset+lines);
       ctx.lineTo(pos.xOffset+20,pos.yOffset+lines);
@@ -531,6 +536,7 @@ electron.remote.getCurrentWindow().webContents.on('before-input-event', (event, 
 
 })
 
+//toggle the dot
 function dot(){
   if(chord.chord.length == 0){
     return;
@@ -545,10 +551,12 @@ function dot(){
     chord.length += ".";
   }
 }
+//cancels quits the chord adder
 function cancel(){
   remote.getCurrentWindow().close();
 }
 
+//adds the chord to the main context
 function add(){
   ipcRenderer.sendTo(mainWinID,"addChord",chord);
 }
@@ -557,3 +565,64 @@ function add(){
 ipcRenderer.on("getClef",(event,newClef) =>{
   clef = newClef;
 });
+
+function saveChord(){
+  prompt({
+    title: 'Save Chord',
+    label: 'Chord Name',
+    value: 'Chord',
+    customStylesheet: __dirname+"/../res/css/stylesDark.css",
+    alwaysOnTop:true,
+    inputAttrs: {
+
+    },
+    type: 'input'
+  })
+  .then((r) => {
+      if(r === null) {
+          console.log('user cancelled');
+      } else {
+          config.chords.push({name:r,chord:{name:chord.name,chord:[...chord.chord],length:chord.length}});
+          ipcRenderer.send("config",config);
+          updateChords();
+
+      }
+  })
+  .catch(console.error);
+}
+
+function delChord(){
+
+  //nothing to delete
+  if(chordSelect.selectedIndex == 0) return;
+  //deletes chord
+  config.chords.splice(chordSelect.selectedIndex-1,1)
+  ipcRenderer.send("config",config);
+  updateChords();
+}
+
+function updateChords(){
+  //clear list
+  while(chordSelect.options.length != 0) chordSelect.remove(0);
+
+  //make init options
+  let option = document.createElement("option");
+  option.text = "new Chord";
+  chordSelect.add(option);
+
+  //add chords
+  for(c of config.chords){
+    option = document.createElement("option");
+    option.text = c.name;
+    chordSelect.add(option);
+  }
+}
+chordSelect.addEventListener("change",(event) =>{
+  //nothing to select
+  if(chordSelect.selectedIndex == 0) return;
+
+  //update render/chord
+  let newChord = config.chords[chordSelect.selectedIndex-1].chord;
+  console.log(newChord);
+  chord = {name:newChord.name,chord:[...newChord.chord],length:newChord.length};
+})

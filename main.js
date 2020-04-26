@@ -25,6 +25,7 @@ var preWin = null;
 //config Files
 config = {
   darkMode:false,
+  chords:[],
   shortcuts: {
     play:{key:"KeyP",Alt:false,Ctrl:false,shift:false,window:false},
     bpm: {key:"KeyB",Alt:false,Ctrl:false,shift:false,window:false},

@@ -1,6 +1,7 @@
 <!doctype html>
 
 <html>
+
   <head>
       <title>Chord Builder</title>
       <link id="style"  rel="stylesheet" href="../res/css/styles.css">
@@ -8,12 +9,20 @@
   </head>
   <body>
     <header>Chord Builder</header>
+    <label for="chords">Saved Chords: </label>
+    <select id="chords" name="chords">
+      <option value="new-chord">new Chord</option>
+    </select>
     <canvas id="chord" width="250" height="200"></canvas>
     <div class="edit">
       <button type="button" name="button" onclick="addNote()">add Note</button>
       <button type="button" name="button" onclick="delNote()">remove Note</button>
       <button type="button" name="button" onclick="moveUp()">move up</button>
       <button type="button" name="button" onclick="moveDown()">move down</button>
+      <button type="button" name="button" onclick="saveChord()">Save Chord</button>
+      <button type="button" name="button" onclick="delChord()">Delete Chord</button>
+
+
 
     </div>
     <div class="length">

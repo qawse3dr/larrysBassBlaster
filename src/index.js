@@ -72,6 +72,7 @@ var Notes = {
 }
 //sets the target to the speakers.
 var synth = null;
+var bassSynth = null;
 createSynth();
 
 
@@ -320,14 +321,21 @@ function drawMusic(){
 /*draws ties over bars and returns the new value of barCounter;*/
 function drawTiedNotes(notes,length1,length2,pos){
   let tempNote = song.tracks[currentInstrument].notes[notes];
-
-  let noteOffset = drawNote({name:tempNote.name,length:length1},pos,notes,true) //draws first note in tie
+  let  = 0;
+  if(tempNote.name != "chord"){
+    noteOffset = drawNote({name:tempNote.name,length:length1},pos,notes,true) //draws first note in tie
+  } else{
+    drawNote({name:"chord",chord:tempNote.chord,length:length1},pos,notes,true);
+  }
   drawTie(pos,noteOffset) //draws the tie
 
   //adds spacing for new note
   pos.xOffset += pos.noteSpacing
-  drawNote({name:tempNote.name,length:length2},pos,notes,true) //draws second note in tie
-
+  if(tempNote.name != "chord"){
+    drawNote({name:tempNote.name,length:length2},pos,notes,true) //draws second note in tie
+  }else{
+    drawNote({name:"chord",chord:tempNote.chord,length:length2},pos,notes,true);
+  }
 
   pos.barCounter = tone.Time(length2).toMilliseconds();
 }
@@ -520,7 +528,7 @@ function drawExtraNotion(noteInfo,pos){
     }
   }
   else if(noteInfo.noteOffset > 20){
-    for(let lines = 40; lines <= noteInfo.noteOffset+30; lines += pos.spaceSize){
+    for(let lines = 50; lines <= noteInfo.noteOffset+26; lines += pos.spaceSize){
       ctx.beginPath();
       ctx.moveTo(pos.xOffset-5,pos.yOffset+lines);
       ctx.lineTo(pos.xOffset+20,pos.yOffset+lines);
@@ -642,8 +650,58 @@ function play(event){ //plays the song or stops it.
 /*Creates the synth object*/
 function createSynth(){
   if(synth != null) synth.dispose()
+  if(bassSynth != null)bassSynth.dispose()
   //synth = new tone.PolySynth(6).toMaster();
   synth = new tone.Sampler({
+    "A#2":"../res/notes/cleanGuitar/AS2.ogg",
+    "A#3":"../res/notes/cleanGuitar/AS3.ogg",
+    "A#4":"../res/notes/cleanGuitar/AS4.ogg",
+    "A#5":"../res/notes/cleanGuitar/AS5.ogg",
+    "A2":"../res/notes/cleanGuitar/A2.ogg",
+    "A3":"../res/notes/cleanGuitar/A3.ogg",
+    "A4":"../res/notes/cleanGuitar/A4.ogg",
+    "A5":"../res/notes/cleanGuitar/A5.ogg",
+    "B2":"../res/notes/cleanGuitar/B2.ogg",
+    "B3":"../res/notes/cleanGuitar/B3.ogg",
+    "B4":"../res/notes/cleanGuitar/B4.ogg",
+    "B5":"../res/notes/cleanGuitar/B5.ogg",
+    "C#3":"../res/notes/cleanGuitar/CS3.ogg",
+    "C#4":"../res/notes/cleanGuitar/CS4.ogg",
+    "C#5":"../res/notes/cleanGuitar/CS5.ogg",
+    "C#6":"../res/notes/cleanGuitar/CS6.ogg",
+    "C3":"../res/notes/cleanGuitar/C3.ogg",
+    "C4":"../res/notes/cleanGuitar/C4.ogg",
+    "C5":"../res/notes/cleanGuitar/C5.ogg",
+    "C6":"../res/notes/cleanGuitar/C6.ogg",
+    "D#3":"../res/notes/cleanGuitar/DS3.ogg",
+    "D#4":"../res/notes/cleanGuitar/DS4.ogg",
+    "D#5":"../res/notes/cleanGuitar/DS5.ogg",
+    "D3":"../res/notes/cleanGuitar/D3.ogg",
+    "D4":"../res/notes/cleanGuitar/D4.ogg",
+    "D5":"../res/notes/cleanGuitar/D5.ogg",
+    "E2":"../res/notes/cleanGuitar/E2.ogg",
+    "E3":"../res/notes/cleanGuitar/E3.ogg",
+    "E4":"../res/notes/cleanGuitar/E4.ogg",
+    "E5":"../res/notes/cleanGuitar/E5.ogg",
+    "F#2":"../res/notes/cleanGuitar/FS2.ogg",
+    "F#3":"../res/notes/cleanGuitar/FS3.ogg",
+    "F#4":"../res/notes/cleanGuitar/FS4.ogg",
+    "F#5":"../res/notes/cleanGuitar/FS5.ogg",
+    "F2":"../res/notes/cleanGuitar/F2.ogg",
+    "F3":"../res/notes/cleanGuitar/F3.ogg",
+    "F4":"../res/notes/cleanGuitar/F4.ogg",
+    "F5":"../res/notes/cleanGuitar/F5.ogg",
+    "G#2":"../res/notes/cleanGuitar/GS2.ogg",
+    "G#3":"../res/notes/cleanGuitar/GS3.ogg",
+    "G#4":"../res/notes/cleanGuitar/GS4.ogg",
+    "G#5":"../res/notes/cleanGuitar/GS5.ogg",
+    "G2":"../res/notes/cleanGuitar/G2.ogg",
+    "G3":"../res/notes/cleanGuitar/G3.ogg",
+    "G4":"../res/notes/cleanGuitar/G4.ogg",
+    "G5":"../res/notes/cleanGuitar/G5.ogg"
+  }).toMaster();
+
+  bassSynth = new tone.Sampler({
     "A#2":"../res/notes/cleanGuitar/AS2.ogg",
     "A#3":"../res/notes/cleanGuitar/AS3.ogg",
     "A#4":"../res/notes/cleanGuitar/AS4.ogg",
@@ -722,6 +780,7 @@ function playSong(){
   let maxDelta = 0; //gets the length of the song.
   let metronomeCounter = 0;
   synth.sync(); //start syncing the tracks
+  bassSynth.sync()
   if(currentNote == -1){
     currentNote=0;
   }
@@ -747,20 +806,19 @@ function playSong(){
       }
     }
     let delta = startOffset; //time passed
-    //first ding for metronome
-    if(metronome){
-      //synth.triggerAttackRelease("C7","32n",startOffset,1);
-    }
+
+
     for(let note = currentNote; note < track.notes.length;note++){ //adds song to queue
 
 
       if(currentNote == -1) continue //add to make sure there isnt a false positive
       if(track.notes[note].name == "chord"){
-        synth.triggerAttackRelease(track.notes[note].chord,track.notes[note].length,delta,0.5);
-
+        if(track.clef != "Bass")synth.triggerAttackRelease(track.notes[note].chord,track.notes[note].length,delta,0.5);
+        else bassSynth.triggerAttackRelease(track.notes[note].chord,track.notes[note].length,delta,0.5);
       } else if(track.notes[note].name !== "r"){
-        synth.triggerAttackRelease(track.notes[note].name,track.notes[note].length,delta,0.5);
-        //console.log(song.tracks[track].notes[note]);
+        if(track.clef != "Bass")synth.triggerAttackRelease(track.notes[note].name,track.notes[note].length,delta,0.5);
+        else bassSynth.triggerAttackRelease(track.notes[note].name,track.notes[note].length,delta,0.5);
+
       }
       delta += tone.Time(track.notes[note].length); //add offset
       //places the dings for metronome
@@ -769,7 +827,7 @@ function playSong(){
 
         metronomeCounter += tone.Time(track.notes[note].length)
         if(metronomeCounter == tone.Time("4n") ){
-          synth.triggerAttackRelease("C7","32n",delta-tone.Time("4n"),1);
+          synth.triggerAttackRelease("C7","32n",delta-tone.Time("4n"),0.75);
           metronomeCounter = 0;
         } else if(metronomeCounter > tone.Time("4n")){
 
@@ -803,6 +861,7 @@ function playSong(){
     }, time*1000));
   }
   synth.volume.value = volume;
+  bassSynth.volume.value = volume;
   tone.Transport.start();
   console.log(volume);
 
@@ -816,6 +875,7 @@ function stopPlay(){
   playBtn.innerText = "Play"
   tone.Transport.stop();
   synth.unsync();
+  bassSynth.unsync();
   createSynth();
   currentTimeouts.forEach(timeout => {
     clearTimeout(timeout);
@@ -1591,11 +1651,10 @@ function paste(event){
         length:song.tracks[copyTrack].notes[copyStart].length}
     } else{
 
-      console.log([...song.tracks[currentInstrument].notes[currentNote].chord]);
       copyNote = {
         name:"chord",
-        length: song.tracks[currentInstrument].notes[currentNote].length,
-        chord: [...song.tracks[currentInstrument].notes[currentNote].chord]
+        length: song.tracks[currentInstrument].notes[copyStart].length,
+        chord: [...song.tracks[currentInstrument].notes[copyStart].chord]
       }
     }
 
@@ -1617,16 +1676,16 @@ function paste(event){
       copyEnd = temp;
     }
     for(let x = copyStart; x <= copyEnd; x++){
-      if(song.tracks[copyTrack].notes[copyStart].name !="chord"){
-        copyNote = {name:song.tracks[copyTrack].notes[copyStart].name,
-          length:song.tracks[copyTrack].notes[copyStart].length}
+      if(song.tracks[copyTrack].notes[x].name !="chord"){
+        copyNote = {name:song.tracks[copyTrack].notes[x].name,
+          length:song.tracks[copyTrack].notes[x].length}
       } else{
 
-        console.log([...song.tracks[currentInstrument].notes[currentNote].chord]);
+
         copyNote = {
           name:"chord",
-          length: song.tracks[currentInstrument].notes[currentNote].length,
-          chord: [...song.tracks[currentInstrument].notes[currentNote].chord]
+          length: song.tracks[currentInstrument].notes[x].length,
+          chord: [...song.tracks[currentInstrument].notes[x].chord]
         }
       }
       song.tracks[currentInstrument].notes.splice(Number(currentNote)+1,0,copyNote);
