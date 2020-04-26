@@ -2,10 +2,6 @@
 A free music program for guitarist and bassist to learn music.
 including tools such as changing tempo, count in, metronome multiple tracks,
 and solo play.  
-It is currently in development and is a side project so hopefully will be functional
-by early January criticism is welcome
-but remember
-  This is my first attempt in using js and html to create an electron app so be kind
 
 ## Installation
 ```
