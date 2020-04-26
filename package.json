@@ -28,6 +28,7 @@
   },
   "homepage": "https://github.com/qawse3dr/LarrysBassBlaster#readme",
   "dependencies": {
+    "electron-prompt": "^1.5.1",
     "tone": "^13.8.25"
   }
 }
