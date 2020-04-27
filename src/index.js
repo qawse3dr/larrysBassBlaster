@@ -73,6 +73,7 @@ var Notes = {
 //sets the target to the speakers.
 var synth = null;
 var bassSynth = null;
+var distGuitar = null;
 createSynth();
 
 
@@ -651,6 +652,7 @@ function play(event){ //plays the song or stops it.
 function createSynth(){
   if(synth != null) synth.dispose()
   if(bassSynth != null)bassSynth.dispose()
+  if(distGuitar != null)distGuitar.dispose()
   //synth = new tone.PolySynth(6).toMaster();
   synth = new tone.Sampler({
     "A#2":"../res/notes/cleanGuitar/AS2.ogg",
@@ -700,7 +702,54 @@ function createSynth(){
     "G4":"../res/notes/cleanGuitar/G4.ogg",
     "G5":"../res/notes/cleanGuitar/G5.ogg"
   }).toMaster();
-
+  distGuitar = new tone.Sampler({
+      "A#2":"../res/notes/distGuitar/AS2.ogg",
+      "A#3":"../res/notes/distGuitar/AS3.ogg",
+      "A#4":"../res/notes/distGuitar/AS4.ogg",
+      "A#5":"../res/notes/distGuitar/AS5.ogg",
+      "A2":"../res/notes/distGuitar/A2.ogg",
+      "A3":"../res/notes/distGuitar/A3.ogg",
+      "A4":"../res/notes/distGuitar/A4.ogg",
+      "A5":"../res/notes/distGuitar/A5.ogg",
+      "B2":"../res/notes/distGuitar/B2.ogg",
+      "B3":"../res/notes/distGuitar/B3.ogg",
+      "B4":"../res/notes/distGuitar/B4.ogg",
+      "B5":"../res/notes/distGuitar/B5.ogg",
+      "C#3":"../res/notes/distGuitar/CS3.ogg",
+      "C#4":"../res/notes/distGuitar/CS4.ogg",
+      "C#5":"../res/notes/distGuitar/CS5.ogg",
+      "C#6":"../res/notes/distGuitar/CS6.ogg",
+      "C3":"../res/notes/distGuitar/C3.ogg",
+      "C4":"../res/notes/distGuitar/C4.ogg",
+      "C5":"../res/notes/distGuitar/C5.ogg",
+      "C6":"../res/notes/distGuitar/C6.ogg",
+      "D#3":"../res/notes/distGuitar/DS3.ogg",
+      "D#4":"../res/notes/distGuitar/DS4.ogg",
+      "D#5":"../res/notes/distGuitar/DS5.ogg",
+      "D3":"../res/notes/distGuitar/D3.ogg",
+      "D4":"../res/notes/distGuitar/D4.ogg",
+      "D5":"../res/notes/distGuitar/D5.ogg",
+      "E2":"../res/notes/distGuitar/E2.ogg",
+      "E3":"../res/notes/distGuitar/E3.ogg",
+      "E4":"../res/notes/distGuitar/E4.ogg",
+      "E5":"../res/notes/distGuitar/E5.ogg",
+      "F#2":"../res/notes/distGuitar/FS2.ogg",
+      "F#3":"../res/notes/distGuitar/FS3.ogg",
+      "F#4":"../res/notes/distGuitar/FS4.ogg",
+      "F#5":"../res/notes/distGuitar/FS5.ogg",
+      "F2":"../res/notes/distGuitar/F2.ogg",
+      "F3":"../res/notes/distGuitar/F3.ogg",
+      "F4":"../res/notes/distGuitar/F4.ogg",
+      "F5":"../res/notes/distGuitar/F5.ogg",
+      "G#2":"../res/notes/distGuitar/GS2.ogg",
+      "G#3":"../res/notes/distGuitar/GS3.ogg",
+      "G#4":"../res/notes/distGuitar/GS4.ogg",
+      "G#5":"../res/notes/distGuitar/GS5.ogg",
+      "G2":"../res/notes/distGuitar/G2.ogg",
+      "G3":"../res/notes/distGuitar/G3.ogg",
+      "G4":"../res/notes/distGuitar/G4.ogg",
+      "G5":"../res/notes/distGuitar/G5.ogg"
+    }).toMaster();
   bassSynth = new tone.Sampler({
     "A#2":"../res/notes/bass/AS2.ogg",
     "A#3":"../res/notes/bass/AS3.ogg",
@@ -756,6 +805,8 @@ console.log(tone.Transport.timeSignature);
 volumeSlider.oninput = () => {
   volume = volumeSlider.value;
   synth.volume.value = volume;
+  bassSynth.volume.value = volume;
+  distGuitar.volume.value = volume;
 }
 
 function playSong(){
@@ -767,7 +818,8 @@ function playSong(){
   let maxDelta = 0; //gets the length of the song.
   let metronomeCounter = 0;
   synth.sync(); //start syncing the tracks
-  bassSynth.sync()
+  bassSynth.sync();
+  distGuitar.sync();
   if(currentNote == -1){
     currentNote=0;
   }
@@ -800,10 +852,12 @@ function playSong(){
 
       if(currentNote == -1) continue //add to make sure there isnt a false positive
       if(track.notes[note].name == "chord"){
-        if(track.clef != "Bass")synth.triggerAttackRelease(track.notes[note].chord,track.notes[note].length,delta,0.5);
+        if(track.instrument == "Guitar")synth.triggerAttackRelease(track.notes[note].chord,track.notes[note].length,delta,0.5);
+        if(track.instrument == "Dist Guitar") distGuitar.triggerAttackRelease(track.notes[note].chord,track.notes[note].length,delta,0.5);
         else bassSynth.triggerAttackRelease(track.notes[note].chord,track.notes[note].length,delta,0.5);
       } else if(track.notes[note].name !== "r"){
-        if(track.clef != "Bass")synth.triggerAttackRelease(track.notes[note].name,track.notes[note].length,delta,0.5);
+        if(track.instrument == "Guitar")synth.triggerAttackRelease(track.notes[note].name,track.notes[note].length,delta,0.5);
+        if(track.instrument == "Dist Guitar")distGuitar.triggerAttackRelease(track.notes[note].name,track.notes[note].length,delta,0.5);
         else bassSynth.triggerAttackRelease(track.notes[note].name,track.notes[note].length,delta,0.5);
 
       }
@@ -849,8 +903,9 @@ function playSong(){
   }
   synth.volume.value = volume;
   bassSynth.volume.value = volume;
+  distGuitar.volume.value = volume+5;
   tone.Transport.start();
-  console.log(volume);
+
 
   generatingMusic = false;
 
@@ -863,6 +918,7 @@ function stopPlay(){
   tone.Transport.stop();
   synth.unsync();
   bassSynth.unsync();
+  distGuitar.unsync();
   createSynth();
   currentTimeouts.forEach(timeout => {
     clearTimeout(timeout);
