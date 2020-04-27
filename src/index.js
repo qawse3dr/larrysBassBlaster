@@ -650,6 +650,7 @@ function play(event){ //plays the song or stops it.
 /*********MUSIC FUNCTIONS*************/
 /*Creates the synth object*/
 function createSynth(){
+  loaded = 0;
   if(synth != null) synth.dispose()
   if(bassSynth != null)bassSynth.dispose()
   if(distGuitar != null)distGuitar.dispose()
@@ -757,7 +758,7 @@ function createSynth(){
     "A2":"../res/notes/bass/A2.ogg",
     "A3":"../res/notes/bass/A3.ogg",
     "A4":"../res/notes/bass/A4.ogg",
-    "B2":"../res/notes/bass/B2.ogg",
+    
     "B3":"../res/notes/bass/B3.ogg",
     "B4":"../res/notes/bass/B4.ogg",
     "C#3":"../res/notes/bass/CS3.ogg",
@@ -810,6 +811,14 @@ volumeSlider.oninput = () => {
 }
 
 function playSong(){
+  //little big of a jank fix but for no will do
+  //dont touch causes timing issues without this
+  if(!bassSynth.loaded || !synth.loaded || !distGuitar.loaded){
+    setTimeout(function(){
+    playSong();
+      }, 50);
+    return;
+  }
   generatingMusic = true;
   isPlaying = true;
   playBtn.innerText = "Stop"
@@ -999,8 +1008,15 @@ function loadFile(fileName){
           err + " Please select a valid file");
       throw err;
     }
-    //loads the song
-    song = JSON.parse(data);
+    try{
+      //loads the song
+      song = JSON.parse(data);
+    } catch(e){
+      alert("failed to read file");
+      currentFile = null;
+
+    }
+
     setBPM(song.bpm);
     setTitle(song.title);
     loadTracks();
