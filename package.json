@@ -1,6 +1,6 @@
 {
   "name": "larrysbassblaster",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Simple application to create and play back songs with sheet music",
   "main": "main.js",
   "scripts": {
